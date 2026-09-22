@@ -12,13 +12,21 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ComplianceRouteImport } from './routes/compliance'
+import { Route as ComplianceProtocolsRouteImport } from './routes/compliance-protocols'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExportRouteImport } from './routes/export'
+import { Route as FounderRouteImport } from './routes/founder'
 import { Route as GlobalNetworkRouteImport } from './routes/global-network'
 import { Route as ImportRouteImport } from './routes/import'
+import { Route as Incoterms2020RouteImport } from './routes/incoterms-2020'
 import { Route as IndustriesRouteImport } from './routes/industries'
+import { Route as NetworkRouteImport } from './routes/network'
+import { Route as OwnerRouteImport } from './routes/owner'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
+import { Route as TermsOfCarriageRouteImport } from './routes/terms-of-carriage'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 
@@ -37,6 +45,16 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComplianceRoute = ComplianceRouteImport.update({
+  id: '/compliance',
+  path: '/compliance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComplianceProtocolsRoute = ComplianceProtocolsRouteImport.update({
+  id: '/compliance-protocols',
+  path: '/compliance-protocols',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -45,6 +63,11 @@ const ContactRoute = ContactRouteImport.update({
 const ExportRoute = ExportRouteImport.update({
   id: '/export',
   path: '/export',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FounderRoute = FounderRouteImport.update({
+  id: '/founder',
+  path: '/founder',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GlobalNetworkRoute = GlobalNetworkRouteImport.update({
@@ -57,9 +80,24 @@ const ImportRoute = ImportRouteImport.update({
   path: '/import',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Incoterms2020Route = Incoterms2020RouteImport.update({
+  id: '/incoterms-2020',
+  path: '/incoterms-2020',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndustriesRoute = IndustriesRouteImport.update({
   id: '/industries',
   path: '/industries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NetworkRoute = NetworkRouteImport.update({
+  id: '/network',
+  path: '/network',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OwnerRoute = OwnerRouteImport.update({
+  id: '/owner',
+  path: '/owner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -67,9 +105,19 @@ const ProductsRoute = ProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RequestQuoteRoute = RequestQuoteRouteImport.update({
   id: '/request-quote',
   path: '/request-quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsOfCarriageRoute = TermsOfCarriageRouteImport.update({
+  id: '/terms-of-carriage',
+  path: '/terms-of-carriage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
@@ -87,13 +135,21 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/compliance': typeof ComplianceRoute
+  '/compliance-protocols': typeof ComplianceProtocolsRoute
   '/contact': typeof ContactRoute
   '/export': typeof ExportRoute
+  '/founder': typeof FounderRoute
   '/global-network': typeof GlobalNetworkRoute
   '/import': typeof ImportRoute
+  '/incoterms-2020': typeof Incoterms2020Route
   '/industries': typeof IndustriesRoute
+  '/network': typeof NetworkRoute
+  '/owner': typeof OwnerRoute
   '/products': typeof ProductsRouteWithChildren
+  '/profile': typeof ProfileRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/terms-of-carriage': typeof TermsOfCarriageRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -101,12 +157,20 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/compliance': typeof ComplianceRoute
+  '/compliance-protocols': typeof ComplianceProtocolsRoute
   '/contact': typeof ContactRoute
   '/export': typeof ExportRoute
+  '/founder': typeof FounderRoute
   '/global-network': typeof GlobalNetworkRoute
   '/import': typeof ImportRoute
+  '/incoterms-2020': typeof Incoterms2020Route
   '/industries': typeof IndustriesRoute
+  '/network': typeof NetworkRoute
+  '/owner': typeof OwnerRoute
+  '/profile': typeof ProfileRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/terms-of-carriage': typeof TermsOfCarriageRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products': typeof ProductsIndexRoute
 }
@@ -115,13 +179,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/compliance': typeof ComplianceRoute
+  '/compliance-protocols': typeof ComplianceProtocolsRoute
   '/contact': typeof ContactRoute
   '/export': typeof ExportRoute
+  '/founder': typeof FounderRoute
   '/global-network': typeof GlobalNetworkRoute
   '/import': typeof ImportRoute
+  '/incoterms-2020': typeof Incoterms2020Route
   '/industries': typeof IndustriesRoute
+  '/network': typeof NetworkRoute
+  '/owner': typeof OwnerRoute
   '/products': typeof ProductsRouteWithChildren
+  '/profile': typeof ProfileRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/terms-of-carriage': typeof TermsOfCarriageRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -131,13 +203,21 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/compliance'
+    | '/compliance-protocols'
     | '/contact'
     | '/export'
+    | '/founder'
     | '/global-network'
     | '/import'
+    | '/incoterms-2020'
     | '/industries'
+    | '/network'
+    | '/owner'
     | '/products'
+    | '/profile'
     | '/request-quote'
+    | '/terms-of-carriage'
     | '/products/$slug'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -145,12 +225,20 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/compliance'
+    | '/compliance-protocols'
     | '/contact'
     | '/export'
+    | '/founder'
     | '/global-network'
     | '/import'
+    | '/incoterms-2020'
     | '/industries'
+    | '/network'
+    | '/owner'
+    | '/profile'
     | '/request-quote'
+    | '/terms-of-carriage'
     | '/products/$slug'
     | '/products'
   id:
@@ -158,13 +246,21 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/compliance'
+    | '/compliance-protocols'
     | '/contact'
     | '/export'
+    | '/founder'
     | '/global-network'
     | '/import'
+    | '/incoterms-2020'
     | '/industries'
+    | '/network'
+    | '/owner'
     | '/products'
+    | '/profile'
     | '/request-quote'
+    | '/terms-of-carriage'
     | '/products/$slug'
     | '/products/'
   fileRoutesById: FileRoutesById
@@ -173,13 +269,21 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  ComplianceRoute: typeof ComplianceRoute
+  ComplianceProtocolsRoute: typeof ComplianceProtocolsRoute
   ContactRoute: typeof ContactRoute
   ExportRoute: typeof ExportRoute
+  FounderRoute: typeof FounderRoute
   GlobalNetworkRoute: typeof GlobalNetworkRoute
   ImportRoute: typeof ImportRoute
+  Incoterms2020Route: typeof Incoterms2020Route
   IndustriesRoute: typeof IndustriesRoute
+  NetworkRoute: typeof NetworkRoute
+  OwnerRoute: typeof OwnerRoute
   ProductsRoute: typeof ProductsRouteWithChildren
+  ProfileRoute: typeof ProfileRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
+  TermsOfCarriageRoute: typeof TermsOfCarriageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -205,6 +309,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compliance': {
+      id: '/compliance'
+      path: '/compliance'
+      fullPath: '/compliance'
+      preLoaderRoute: typeof ComplianceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compliance-protocols': {
+      id: '/compliance-protocols'
+      path: '/compliance-protocols'
+      fullPath: '/compliance-protocols'
+      preLoaderRoute: typeof ComplianceProtocolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -217,6 +335,13 @@ declare module '@tanstack/react-router' {
       path: '/export'
       fullPath: '/export'
       preLoaderRoute: typeof ExportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/founder': {
+      id: '/founder'
+      path: '/founder'
+      fullPath: '/founder'
+      preLoaderRoute: typeof FounderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/global-network': {
@@ -233,11 +358,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/incoterms-2020': {
+      id: '/incoterms-2020'
+      path: '/incoterms-2020'
+      fullPath: '/incoterms-2020'
+      preLoaderRoute: typeof Incoterms2020RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/industries': {
       id: '/industries'
       path: '/industries'
       fullPath: '/industries'
       preLoaderRoute: typeof IndustriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/network': {
+      id: '/network'
+      path: '/network'
+      fullPath: '/network'
+      preLoaderRoute: typeof NetworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/owner': {
+      id: '/owner'
+      path: '/owner'
+      fullPath: '/owner'
+      preLoaderRoute: typeof OwnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -247,11 +393,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/request-quote': {
       id: '/request-quote'
       path: '/request-quote'
       fullPath: '/request-quote'
       preLoaderRoute: typeof RequestQuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms-of-carriage': {
+      id: '/terms-of-carriage'
+      path: '/terms-of-carriage'
+      fullPath: '/terms-of-carriage'
+      preLoaderRoute: typeof TermsOfCarriageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products/': {
@@ -289,13 +449,21 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  ComplianceRoute: ComplianceRoute,
+  ComplianceProtocolsRoute: ComplianceProtocolsRoute,
   ContactRoute: ContactRoute,
   ExportRoute: ExportRoute,
+  FounderRoute: FounderRoute,
   GlobalNetworkRoute: GlobalNetworkRoute,
   ImportRoute: ImportRoute,
+  Incoterms2020Route: Incoterms2020Route,
   IndustriesRoute: IndustriesRoute,
+  NetworkRoute: NetworkRoute,
+  OwnerRoute: OwnerRoute,
   ProductsRoute: ProductsRouteWithChildren,
+  ProfileRoute: ProfileRoute,
   RequestQuoteRoute: RequestQuoteRoute,
+  TermsOfCarriageRoute: TermsOfCarriageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

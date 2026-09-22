@@ -1,18 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
 import {
-  Anchor,
   ArrowRight,
   ArrowUpRight,
-  Check,
-  Compass,
-  FileCheck2,
+  CheckCircle2,
   Globe2,
   Layers,
   MapPin,
   MoveRight,
   Package,
-  Plane,
   Scale,
   Search,
   ShieldCheck,
@@ -21,1235 +16,630 @@ import {
   Truck,
   Warehouse,
 } from "lucide-react";
+import { MarqueeTicker, SectionLabel } from "../components/site";
+import { useMachineryStore } from "../lib/machinery-store";
+
 import heroImage from "../assets/global-port-hero.jpg";
-import warehouseImage from "../assets/warehouse-operations.jpg";
-import terminalImage from "../assets/industry-terminal.jpg";
-import { InquiryForm } from "../components/forms";
-import { EditorialHeading, MarqueeTicker, SectionLabel } from "../components/site";
-import { categoryList } from "../data/products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Meridian Trade Co. — Global Import & Export Trading House" },
+      { title: "Confident Textiles Machinery — China to India Textile Machinery Sourcing" },
       {
         name: "description",
         content:
-          "Old-World Global Trade × Modern Industrial Luxury. Verified commodity sourcing, international freight logistics, and border execution across global markets.",
+          "Connecting China's Textile Machinery with India's Manufacturing Industry. Sourcing, quality verification, and import logistics for spinning, weaving, knitting, and dyeing machinery.",
       },
-      { property: "og:title", content: "Meridian Trade Co. — Global Commerce Redefined" },
+      { property: "og:title", content: "Confident Textiles Machinery — China to India Machinery Sourcing" },
       {
         property: "og:description",
         content:
-          "Connecting producers, suppliers, and global markets through verified sourcing, international logistics, and disciplined trade execution.",
+          "We source, verify and facilitate the import of reliable textile machinery from trusted Chinese manufacturers to textile industries across India.",
       },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: HomePage,
 });
 
-/* Interactive Number Counter */
-function StatCounter({ value, label }: { value: string; label: string }) {
-  const [count, setCount] = useState("0");
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const target = parseInt(value.replace(/\D/g, ""), 10);
-    const hasPlus = value.includes("+");
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        let start = 0;
-        const step = Math.max(1, Math.ceil(target / 40));
-        const interval = setInterval(() => {
-          start += step;
-          if (start >= target) {
-            setCount(`${target}${hasPlus ? "+" : ""}`);
-            clearInterval(interval);
-          } else {
-            setCount(`${start}${hasPlus ? "+" : ""}`);
-          }
-        }, 30);
-        observer.disconnect();
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [value]);
-
-  return (
-    <div
-      ref={ref}
-      className="p-8 lg:p-12 border-b border-[#FAF7F2]/10 md:border-b-0 md:border-r last:border-r-0"
-    >
-      <div className="font-serif text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-[#FAF7F2]">
-        {count}
-      </div>
-      <div className="mt-3 flex items-center gap-2">
-        <span className="size-1 bg-[#C5A059]" />
-        <span className="font-mono text-xs font-bold tracking-[0.24em] text-[#C5A059] uppercase">
-          {label}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/* Interactive SVG World Map */
-function InteractiveWorldMap() {
-  const [activeHub, setActiveHub] = useState<number | null>(0);
-
-  const hubs = [
-    {
-      name: "ROTTERDAM & HAMBURG",
-      region: "Northwest Europe",
-      coords: [490, 115],
-      commodities: "Industrial Steel, Heavy Machinery, Specialty Foods",
-      transit: "Base European Transshipment · 24-48h clearance",
-    },
-    {
-      name: "JEBEL ALI & DAMMAM",
-      region: "Middle East & GCC",
-      coords: [580, 185],
-      commodities: "Basmati Rice, Cardamom, Petrochemical LAB, Aluminum",
-      transit: "Free Zone Multimodal Distribution · Hub Port",
-    },
-    {
-      name: "NHAVA SHEVA & MUNDRA",
-      region: "South Asia / India",
-      coords: [665, 205],
-      commodities: "Aged Basmati, Spices, Forged Auto Components, Cotton",
-      transit: "Primary Origin Basin · Direct Rail Corridors",
-    },
-    {
-      name: "SINGAPORE & PORT KLANG",
-      region: "Southeast Asia",
-      coords: [740, 255],
-      commodities: "Refined Glycerin, Cast LLDPE Film, Electronics",
-      transit: "Malacca Strait Gateway · Bulk Transshipment",
-    },
-    {
-      name: "HOUSTON & LONG BEACH",
-      region: "North America",
-      coords: [210, 175],
-      commodities: "Machinery, Grains, Specialty Polymers, Equipment",
-      transit: "Trans-Pacific / Atlantic Terminals · Intermodal Rail",
-    },
-    {
-      name: "MOMBASA & DURBAN",
-      region: "Sub-Saharan Africa",
-      coords: [545, 290],
-      commodities: "Industrial Pipes, Construction Steel, Rice, Tea",
-      transit: "East & South African Inbound Corridors",
-    },
-  ];
-
-  // Route arcs between hubs
-  const routes = [
-    { from: 4, to: 0 }, // Houston -> Rotterdam
-    { from: 0, to: 1 }, // Rotterdam -> Jebel Ali
-    { from: 1, to: 2 }, // Jebel Ali -> India
-    { from: 2, to: 3 }, // India -> Singapore
-    { from: 1, to: 5 }, // Jebel Ali -> Mombasa/Durban
-    { from: 3, to: 4 }, // Singapore -> Long Beach
-  ];
-
-  return (
-    <div className="relative mt-12 w-full overflow-hidden border border-[#C5A059]/25 bg-[#120F0D] p-6 lg:p-10 shadow-2xl">
-      <div className="flex flex-col justify-between gap-4 border-b border-[#FAF7F2]/10 pb-6 md:flex-row md:items-center">
-        <div>
-          <span className="font-mono text-[10px] tracking-[0.28em] text-[#C5A059] uppercase">
-            [ CARTOGRAPHIC TRADE SCHEMATIC ]
-          </span>
-          <h3 className="font-serif text-2xl font-bold text-[#FAF7F2]">
-            Global Maritime Corridors & Active Hubs
-          </h3>
-        </div>
-        <div className="flex items-center gap-4 text-xs font-mono text-[#FAF7F2]/60">
-          <span className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-[#C5A059] animate-ping" />
-            Active Route
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-2 bg-[#C5A059]" />
-            Strategic Hub
-          </span>
-        </div>
-      </div>
-
-      <div className="relative mt-8 aspect-[16/9] w-full max-h-[540px]">
-        <svg
-          viewBox="0 0 960 480"
-          className="size-full"
-          fill="none"
-          aria-label="Global Trade Route Map"
-        >
-          {/* Subtle Latitude/Longitude Grid Lines */}
-          {[120, 240, 360].map((y) => (
-            <line
-              key={`lat-${y}`}
-              x1="0"
-              y1={y}
-              x2="960"
-              y2={y}
-              stroke="#C5A059"
-              strokeWidth="0.5"
-              strokeDasharray="3 6"
-              opacity="0.12"
-            />
-          ))}
-          {[200, 400, 600, 800].map((x) => (
-            <line
-              key={`lon-${x}`}
-              x1={x}
-              y1="0"
-              x2={x}
-              y2="480"
-              stroke="#C5A059"
-              strokeWidth="0.5"
-              strokeDasharray="3 6"
-              opacity="0.12"
-            />
-          ))}
-
-          {/* Stylized Minimal Continent Outlines */}
-          {/* North America */}
-          <path
-            d="M90 70 L240 50 L310 110 L280 180 L230 220 L190 260 L140 230 L110 160 Z"
-            fill="#231C18"
-            stroke="#C5A059"
-            strokeWidth="0.75"
-            strokeOpacity="0.25"
-          />
-          {/* South America */}
-          <path
-            d="M230 250 L310 260 L360 330 L320 420 L270 450 L230 360 Z"
-            fill="#231C18"
-            stroke="#C5A059"
-            strokeWidth="0.75"
-            strokeOpacity="0.25"
-          />
-          {/* Europe */}
-          <path
-            d="M440 60 L550 50 L560 110 L520 150 L450 140 L430 90 Z"
-            fill="#231C18"
-            stroke="#C5A059"
-            strokeWidth="0.75"
-            strokeOpacity="0.25"
-          />
-          {/* Africa */}
-          <path
-            d="M450 160 L570 170 L610 240 L580 370 L520 420 L460 320 L430 210 Z"
-            fill="#231C18"
-            stroke="#C5A059"
-            strokeWidth="0.75"
-            strokeOpacity="0.25"
-          />
-          {/* Asia */}
-          <path
-            d="M570 60 L830 50 L890 120 L840 230 L730 260 L650 240 L580 160 Z"
-            fill="#231C18"
-            stroke="#C5A059"
-            strokeWidth="0.75"
-            strokeOpacity="0.25"
-          />
-          {/* Australia / Oceania */}
-          <path
-            d="M770 310 L890 320 L880 400 L800 420 L760 360 Z"
-            fill="#231C18"
-            stroke="#C5A059"
-            strokeWidth="0.75"
-            strokeOpacity="0.25"
-          />
-
-          {/* Trade Route Arcs with Moving Beams */}
-          {routes.map((r, i) => {
-            const start = hubs[r.from].coords;
-            const end = hubs[r.to].coords;
-            const midX = (start[0] + end[0]) / 2;
-            const midY = Math.min(start[1], end[1]) - 40;
-            const pathD = `M${start[0]} ${start[1]} Q${midX} ${midY} ${end[0]} ${end[1]}`;
-
-            return (
-              <g key={`route-${i}`}>
-                {/* Background route track */}
-                <path d={pathD} stroke="#C5A059" strokeWidth="1" strokeOpacity="0.2" fill="none" />
-                {/* Glowing moving beam */}
-                <path
-                  d={pathD}
-                  stroke="#C5A059"
-                  strokeWidth="2"
-                  className="route-line"
-                  fill="none"
-                  strokeLinecap="round"
-                />
-              </g>
-            );
-          })}
-
-          {/* Hub Nodes */}
-          {hubs.map((hub, idx) => {
-            const isSelected = activeHub === idx;
-            return (
-              <g
-                key={hub.name}
-                className="cursor-pointer transition-all duration-300"
-                onClick={() => setActiveHub(idx)}
-                onMouseEnter={() => setActiveHub(idx)}
-              >
-                {/* Outer radar pulse */}
-                <circle
-                  cx={hub.coords[0]}
-                  cy={hub.coords[1]}
-                  r={isSelected ? 18 : 12}
-                  className="route-dot fill-[#C5A059]/20"
-                />
-                <circle
-                  cx={hub.coords[0]}
-                  cy={hub.coords[1]}
-                  r={isSelected ? 8 : 5}
-                  className="fill-[#C5A059]"
-                />
-                <circle
-                  cx={hub.coords[0]}
-                  cy={hub.coords[1]}
-                  r={isSelected ? 3 : 2}
-                  className="fill-[#161210]"
-                />
-
-                {/* Hub Label */}
-                <text
-                  x={hub.coords[0]}
-                  y={hub.coords[1] - 14}
-                  textAnchor="middle"
-                  className={`font-mono text-[9px] font-bold uppercase transition-all duration-300 ${
-                    isSelected ? "fill-[#C5A059] font-extrabold" : "fill-[#FAF7F2]/70"
-                  }`}
-                  letterSpacing="0.1em"
-                >
-                  {hub.name.split(" & ")[0]}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* Selected Hub Dossier Overlay */}
-        {activeHub !== null && (
-          <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-auto sm:max-w-md border border-[#C5A059] bg-[#161210]/95 backdrop-blur-md p-5 text-[#FAF7F2] shadow-2xl animate-in fade-in slide-in-from-bottom-2">
-            <div className="flex items-center justify-between border-b border-[#FAF7F2]/10 pb-2">
-              <span className="font-mono text-[10px] font-bold text-[#C5A059] tracking-[0.25em] uppercase">
-                [ {hubs[activeHub].region} ]
-              </span>
-              <span className="font-mono text-[10px] text-[#FAF7F2]/50">STRATEGIC TERMINAL</span>
-            </div>
-            <h4 className="mt-2 font-serif text-xl font-bold text-[#FAF7F2]">
-              {hubs[activeHub].name}
-            </h4>
-            <div className="mt-3 space-y-1.5 text-xs">
-              <div className="text-[#FAF7F2]/70 font-sans">
-                <strong className="text-[#C5A059] font-mono text-[11px] block uppercase">
-                  Primary Flow:
-                </strong>
-                {hubs[activeHub].commodities}
-              </div>
-              <div className="text-[#FAF7F2]/60 font-mono text-[11px] pt-1">
-                {hubs[activeHub].transit}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function HomePage() {
-  // Parallax / mouse tilt state for signature hero
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [activeCatalogueIdx, setActiveCatalogueIdx] = useState(0);
+  const { products, industries, networkLocations, ownerProfile, companyInfo } = useMachineryStore();
 
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    const { clientX, clientY, currentTarget } = e;
-    const { width, height, left, top } = currentTarget.getBoundingClientRect();
-    const x = (clientX - left) / width - 0.5;
-    const y = (clientY - top) / height - 0.5;
-    setMousePos({ x, y });
-  };
+  const featuredProducts = products.slice(0, 4);
+  const featuredIndustries = industries.slice(0, 6);
 
   return (
     <div className="relative overflow-hidden bg-[#F4EFE6] text-[#161210]">
-      {/* =========================================================================
-          1. SIGNATURE EDITORIAL HERO
-          ========================================================================= */}
+      {/* ═══════════════════════════════════════════════════════
+          HERO: CHINA → INDIA TEXTILE MACHINERY SOURCING
+          ═══════════════════════════════════════════════════════ */}
       <section
-        onMouseMove={handleMouseMove}
-        className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden bg-[#161210] pt-28 pb-8 text-[#FAF7F2]"
+        className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#161210] text-[#FAF7F2]"
       >
-        {/* Cinematic Backdrop Image with Parallax & Grading */}
-        <div
-          className="absolute inset-0 size-full overflow-hidden transition-transform duration-700 ease-out"
-          style={{
-            transform: `scale(1.05) translate(${mousePos.x * 14}px, ${mousePos.y * 14}px)`,
-          }}
-        >
+        {/* Cinematic Backdrop */}
+        <div className="absolute inset-0 size-full overflow-hidden">
           <img
             src={heroImage}
-            alt="International container vessel and maritime port"
-            className="size-full object-cover opacity-35 filter brightness-90 contrast-110"
+            alt="Global Maritime Port and Industrial Textile Machinery Trade Operations"
+            className="size-full object-cover opacity-35"
+            loading="eager"
+            decoding="async"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#161210] via-[#161210]/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#161210] via-[#161210]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#161210] via-[#161210]/65 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#161210] via-[#161210]/50 to-transparent" />
         </div>
 
-        {/* Vertical Left Side Label */}
-        <div className="absolute left-6 top-36 hidden lg:flex flex-col items-center gap-6 font-mono text-[10px] tracking-[0.35em] text-[#C5A059] uppercase z-10">
-          <span className="[writing-mode:vertical-lr] rotate-180">EST. 2012 · GLOBAL COMMERCE</span>
-          <span className="h-16 w-px bg-[#C5A059]/40" />
-          <Compass size={14} className="text-[#C5A059]" />
-        </div>
+        {/* Ambient Warm Lighting using zero-cost CSS radial gradients */}
+        <div
+          className="absolute top-1/4 left-0 size-[500px] pointer-events-none rounded-full"
+          style={{
+            background: "radial-gradient(circle at center, rgba(197,160,89,0.12) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute bottom-1/4 right-0 size-[400px] pointer-events-none rounded-full"
+          style={{
+            background: "radial-gradient(circle at center, rgba(158,78,57,0.14) 0%, transparent 70%)",
+          }}
+        />
 
-        {/* Hero Central Content */}
-        <div className="relative mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-6 lg:px-20 z-10">
-          <div className="grid gap-12 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-3 border border-[#C5A059]/40 bg-[#161210]/60 px-4 py-1.5 backdrop-blur-sm">
-                <span className="size-1.5 bg-[#C5A059]" />
-                <span className="font-mono text-[10px] font-bold tracking-[0.28em] text-[#FAF7F2] uppercase">
-                  INTERNATIONAL IMPORT & EXPORT
+        {/* ── Hero Content ── */}
+        <div className="relative mx-auto flex w-full max-w-[1440px] 2xl:max-w-[1720px] flex-1 flex-col justify-center
+                        px-5 sm:px-8 lg:px-12 2xl:px-16 z-10
+                        pt-24 sm:pt-36 lg:pt-40 pb-8 sm:pb-20 lg:pb-24">
+
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 xl:gap-20 lg:items-center">
+
+            {/* ─ Left: Headline + CTA ─ */}
+            <div className="flex flex-col gap-6 sm:gap-8">
+
+              {/* Status Badge */}
+              <div className="inline-flex w-fit items-center gap-2.5 rounded-full border border-[#C5A059]/40
+                              bg-[#161210]/80 px-4 py-2 backdrop-blur-xl shadow-lg">
+                <span className="size-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.18em] text-[#DFBA6F] uppercase">
+                  China Sourcing → Indian Textile Mills
                 </span>
               </div>
 
-              {/* Enormous Editorial Headline */}
-              <h1 className="font-serif text-5xl font-bold tracking-tight text-[#FAF7F2] sm:text-6xl md:text-7xl lg:text-8xl xl:text-[94px] leading-[1.02]">
-                GLOBAL
-                <br />
-                <span className="text-[#C5A059] italic font-normal">TRADE,</span>
-                <br />
-                REDEFINED.
-              </h1>
+              {/* Main Headline */}
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl 2xl:text-8xl font-bold
+                               text-[#FAF7F2] leading-[1.15] sm:leading-[1.1] tracking-tight">
+                  Connecting China's{" "}
+                  <span className="bg-gradient-to-r from-[#FAF7F2] via-[#E5C98F] to-[#C5A059]
+                                   bg-clip-text text-transparent italic font-semibold">
+                    Textile Machinery
+                  </span>{" "}
+                  with India's Mills.
+                </h1>
 
-              <p className="max-w-xl text-base md:text-lg leading-relaxed text-[#FAF7F2]/80 font-sans">
-                Connecting producers, certified suppliers, and global markets through verified
-                sourcing, deep-water freight logistics, and disciplined commercial execution.
-              </p>
+                <p className="max-w-xl text-base sm:text-lg text-[#FAF7F2]/75 leading-[1.8] font-sans">
+                  {companyInfo.heroSupportingText ||
+                    "We source, verify and import trusted Chinese textile machinery — spinning, weaving, knitting, and dyeing — directly to Indian manufacturers."}
+                </p>
+              </div>
 
-              <div className="flex flex-wrap items-center gap-5 pt-4">
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <Link
                   to="/products"
-                  className="group relative inline-flex items-center gap-3 border border-[#C5A059] bg-[#C5A059] px-8 py-4 font-mono text-xs font-bold tracking-[0.22em] uppercase text-[#161210] transition-colors duration-300 hover:bg-[#FAF7F2] hover:border-[#FAF7F2]"
+                  className="group inline-flex items-center gap-2.5 rounded-xl bg-[#C5A059]
+                             px-6 sm:px-8 py-3.5 sm:py-4 font-mono text-xs sm:text-sm font-bold
+                             tracking-wider uppercase text-[#161210] transition-all duration-300
+                             hover:bg-[#FAF7F2] hover:shadow-xl hover:shadow-[#C5A059]/30 shadow-md cursor-pointer"
                 >
-                  <span>EXPLORE CATALOGUE</span>
-                  <ArrowRight
-                    size={15}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
+                  <span>Explore Machinery</span>
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 shrink-0" />
                 </Link>
 
                 <Link
                   to="/contact"
-                  className="group inline-flex items-center gap-3 border border-[#FAF7F2]/30 bg-transparent px-8 py-4 font-mono text-xs font-bold tracking-[0.22em] uppercase text-[#FAF7F2] transition duration-300 hover:border-[#C5A059] hover:bg-[#C5A059]/10"
+                  className="group inline-flex items-center gap-2.5 rounded-xl border border-[#FAF7F2]/25
+                             bg-white/5 backdrop-blur-xl px-6 sm:px-8 py-3.5 sm:py-4 font-mono
+                             text-xs sm:text-sm font-bold tracking-wider uppercase text-[#FAF7F2]
+                             transition duration-300 hover:border-[#C5A059] hover:bg-[#C5A059]/15 cursor-pointer"
                 >
-                  <span>CONTACT US</span>
-                  <ArrowUpRight
-                    size={15}
-                    className="text-[#C5A059] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  />
+                  <span>Sourcing Desk</span>
+                  <ArrowUpRight size={14} className="text-[#C5A059] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
                 </Link>
               </div>
             </div>
 
-            {/* Oversized Circular Emblem / CTA */}
-            <div className="flex flex-col items-start lg:items-end justify-center">
+            {/* ─ Right: 360° Rotating Circular Emblem / Sourcing Corridor Seal ─ */}
+            <div className="flex flex-col items-center lg:items-end justify-center mt-6 sm:mt-8 lg:mt-0">
               <Link
                 to="/products"
-                className="group relative flex size-48 md:size-56 items-center justify-center rounded-full border border-[#C5A059]/40 bg-[#161210]/80 p-4 text-center backdrop-blur-md transition-transform duration-500 hover:scale-105 hover:border-[#C5A059]"
+                aria-label="Explore Textile Machinery Sourcing Corridor"
+                className="group relative flex size-64 sm:size-80 lg:size-[360px] xl:size-[400px] items-center justify-center rounded-full border border-[#C5A059]/40 bg-[#161210]/90 p-4 text-center backdrop-blur-md shadow-[0_0_60px_rgba(0,0,0,0.85)] transition-all duration-300 hover:scale-[1.03] hover:border-[#C5A059] hover:shadow-[0_0_70px_rgba(197,160,89,0.28)] cursor-pointer select-none"
               >
-                {/* Rotating Outer Text Ring */}
-                <div className="absolute inset-0 size-full animate-spin-slow">
-                  <svg viewBox="0 0 200 200" className="size-full">
-                    <path
-                      id="circlePath"
-                      d="M 100, 100 m -75, 0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0"
+                {/* Subtle Ambient Radial Glow */}
+                <div
+                  className="absolute inset-0 rounded-full pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle at center, rgba(197,160,89,0.14) 0%, transparent 70%)",
+                  }}
+                />
+
+                {/* 360° Continuous Smooth Rotating Outer Ring */}
+                <div
+                  style={{ transform: "translateZ(0)" }}
+                  className="absolute inset-0 size-full animate-spin-slow pointer-events-none"
+                >
+                  <svg viewBox="0 0 400 400" className="size-full overflow-visible">
+                    <defs>
+                      <path
+                        id="circleTextPath"
+                        d="M 200, 200 m -155, 0 a 155,155 0 1,1 310,0 a 155,155 0 1,1 -310,0"
+                        fill="none"
+                      />
+                    </defs>
+
+                    {/* Outer Thin Perimeter Guide */}
+                    <circle
+                      cx="200"
+                      cy="200"
+                      r="188"
                       fill="none"
+                      stroke="#C5A059"
+                      strokeOpacity="0.25"
+                      strokeWidth="1"
                     />
-                    <text className="font-mono text-[9px] font-bold tracking-[0.32em] fill-[#C5A059] uppercase">
-                      <textPath href="#circlePath">
-                        · EXPLORE OUR WORLD · GLOBAL COMMERCE ·
+
+                    {/* Inner Dotted Concentric Ring */}
+                    <circle
+                      cx="200"
+                      cy="200"
+                      r="124"
+                      fill="none"
+                      stroke="#C5A059"
+                      strokeOpacity="0.38"
+                      strokeWidth="1.2"
+                      strokeDasharray="3 5"
+                    />
+                    <circle
+                      cx="200"
+                      cy="200"
+                      r="120"
+                      fill="none"
+                      stroke="#C5A059"
+                      strokeOpacity="0.18"
+                      strokeWidth="0.75"
+                    />
+
+                    {/* Circular 360° Rotating Text */}
+                    <text className="font-mono text-[10px] font-bold tracking-[0.24em] fill-[#DFBA6F] uppercase">
+                      <textPath
+                        href="#circleTextPath"
+                        xlinkHref="#circleTextPath"
+                        startOffset="0%"
+                        textLength="960"
+                        lengthAdjust="spacing"
+                      >
+                        · QUALITY CHECK ·· IMPORT LOGISTICS ·· CHINA MANUFACTURING ··
                       </textPath>
                     </text>
                   </svg>
                 </div>
 
-                {/* Center Core */}
-                <div className="flex flex-col items-center justify-center space-y-1">
-                  <Compass
-                    size={24}
-                    className="text-[#C5A059] transition-transform duration-500 group-hover:rotate-45"
-                  />
-                  <span className="font-serif text-lg font-bold text-[#FAF7F2] leading-tight">
-                    TRADE
-                    <br />
-                    BORDERS
+                {/* Stationary Center Core (Upright & Readable) */}
+                <div className="relative z-10 flex flex-col items-center justify-center space-y-1.5 sm:space-y-2">
+                  {/* Top Corridor Pill with Dotted Connectors */}
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="inline-block w-4 sm:w-6 border-t border-dotted border-[#C5A059]/40" />
+                    <span className="rounded border border-[#C5A059]/60 bg-[#1A1513]/90 px-2 sm:px-2.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold tracking-wider text-[#DFBA6F] uppercase shadow-sm">
+                      CN CHINA — IN INDIA
+                    </span>
+                    <span className="inline-block w-4 sm:w-6 border-t border-dotted border-[#C5A059]/40" />
+                  </div>
+
+                  {/* Machine Category Title */}
+                  <div className="flex flex-col items-center leading-none">
+                    <span className="font-serif text-2xl sm:text-3xl xl:text-4xl font-bold tracking-[0.14em] text-[#FAF7F2] uppercase">
+                      TEXTILE
+                    </span>
+                    <span className="font-serif text-xl sm:text-2xl xl:text-3xl font-bold italic tracking-[0.12em] text-[#DFBA6F] uppercase mt-0.5">
+                      MACHINERY
+                    </span>
+                  </div>
+
+                  {/* Sourcing Corridor Subtitle */}
+                  <span className="font-mono text-[8.5px] sm:text-[9.5px] font-bold tracking-[0.26em] text-[#FAF7F2]/60 uppercase">
+                    SOURCING CORRIDOR
                   </span>
-                  <ArrowRight size={14} className="text-[#C5A059]" />
+
+                  {/* Interactive CTA with Arrow */}
+                  <div className="pt-1.5 sm:pt-2 flex items-center gap-1.5 font-mono text-[10px] sm:text-[11px] font-bold tracking-widest text-[#DFBA6F] group-hover:text-[#FAF7F2] transition-colors uppercase">
+                    <span>EXPLORE</span>
+                    <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1 text-[#C5A059]" />
+                  </div>
                 </div>
               </Link>
             </div>
           </div>
+
+          {/* ─ Mobile-Only Trade Telemetry Strip: Fills the blank space on mobile view ─ */}
+          <div className="lg:hidden mt-6 sm:mt-8 w-full max-w-lg mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
+              <div className="rounded-xl border border-[#C5A059]/25 bg-[#1E1916]/85 p-3 backdrop-blur-md space-y-1">
+                <span className="font-mono text-[9px] text-[#C5A059] font-bold uppercase tracking-wider block">
+                  QUALITY AUDIT
+                </span>
+                <div className="font-serif text-base sm:text-lg font-bold text-emerald-400">
+                  99.4% Pass
+                </div>
+                <span className="font-mono text-[9px] text-[#FAF7F2]/60 block">
+                  8-Hr Load Testing
+                </span>
+              </div>
+
+              <div className="rounded-xl border border-[#C5A059]/25 bg-[#1E1916]/85 p-3 backdrop-blur-md space-y-1">
+                <span className="font-mono text-[9px] text-[#C5A059] font-bold uppercase tracking-wider block">
+                  OCEAN TRANSIT
+                </span>
+                <div className="font-serif text-base sm:text-lg font-bold text-[#FAF7F2]">
+                  14–18 Days
+                </div>
+                <span className="font-mono text-[9px] text-[#FAF7F2]/60 block">
+                  Direct Sea Route
+                </span>
+              </div>
+
+              <div className="rounded-xl border border-[#C5A059]/25 bg-[#1E1916]/85 p-3 backdrop-blur-md space-y-1">
+                <span className="font-mono text-[9px] text-[#C5A059] font-bold uppercase tracking-wider block">
+                  CUSTOMS / EPCG
+                </span>
+                <div className="font-serif text-base sm:text-lg font-bold text-[#DFBA6F]">
+                  0% Duty Pass
+                </div>
+                <span className="font-mono text-[9px] text-[#FAF7F2]/60 block">
+                  DGFT Dossier
+                </span>
+              </div>
+
+              <div className="rounded-xl border border-[#C5A059]/25 bg-[#1E1916]/85 p-3 backdrop-blur-md space-y-1">
+                <span className="font-mono text-[9px] text-[#C5A059] font-bold uppercase tracking-wider block">
+                  COMMISSIONING
+                </span>
+                <div className="font-serif text-base sm:text-lg font-bold text-[#FAF7F2]">
+                  Pan-India
+                </div>
+                <span className="font-mono text-[9px] text-[#FAF7F2]/60 block">
+                  Mill Gate Delivery
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Bottom Horizontal Ticker */}
-        <div className="mt-12 z-10">
+        {/* Ticker */}
+        <div className="z-10">
           <MarqueeTicker />
         </div>
       </section>
 
       {/* =========================================================================
-          2. GLOBAL NUMBERS (STATISTICS STRIP)
+          2. TRUSTED CHINA → INDIA MACHINERY SUPPLY STRIP
           ========================================================================= */}
-      <section className="relative z-20 border-b border-[#FAF7F2]/10 bg-[#161210] text-[#FAF7F2]">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCounter value="25+" label="COUNTRIES SERVED" />
-            <StatCounter value="100+" label="COMMODITIES TRADED" />
-            <StatCounter value="500+" label="VESSEL SHIPMENTS" />
-            <StatCounter value="10+" label="YEARS OF INTEGRITY" />
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          3. INTRODUCTION SECTION ("FROM ORIGIN TO OPPORTUNITY")
-          ========================================================================= */}
-      <section className="relative py-24 lg:py-36 bg-[#F4EFE6] px-6 lg:px-12">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
-            {/* Vertical Luxury Photo Composition */}
-            <div className="relative">
-              <div className="relative overflow-hidden border border-[#C5A059]/50 shadow-2xl">
-                <img
-                  src={warehouseImage}
-                  alt="Meridian disciplined warehouse and trade distribution"
-                  className="aspect-[4/5] w-full object-cover filter contrast-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#161210]/60 via-transparent to-transparent" />
-              </div>
-
-              {/* Editorial handwritten / annotation overlay */}
-              <div className="absolute -bottom-6 -right-4 sm:-bottom-8 sm:-right-8 border border-[#C5A059] bg-[#FAF7F2] p-6 sm:p-8 text-[#161210] shadow-2xl max-w-xs">
-                <span className="font-mono text-[10px] font-bold tracking-[0.25em] text-[#C5A059] uppercase block mb-2">
-                  [ EXECUTION PIPELINE ]
-                </span>
-                <div className="font-serif text-2xl font-bold leading-tight">
-                  SOURCE
-                  <br />
-                  <span className="text-[#9E4E39]">→</span> MOVE
-                  <br />
-                  <span className="text-[#3E4C34]">→</span> DELIVER
-                </div>
-                <p className="mt-3 text-[11px] font-mono text-[#6B625B] leading-normal">
-                  Three disciplines. Zero friction. Absolute border accountability.
-                </p>
-              </div>
-            </div>
-
-            {/* Editorial Content */}
-            <div className="space-y-8 lg:pl-8">
-              <SectionLabel number="01">ORIGIN TO OPPORTUNITY</SectionLabel>
-
-              <EditorialHeading
-                title="FROM ORIGIN TO OPPORTUNITY."
-                subtitle="We connect producers, certified suppliers, and global markets across borders through trusted sourcing, international logistics, and disciplined trade execution."
-              />
-
-              <div className="space-y-5 text-sm md:text-base leading-relaxed text-[#6B625B]">
-                <p>
-                  Trade is not merely logistics—it is the disciplined convergence of quality
-                  assurance, contractual integrity, maritime precision, and regulatory fluency.
-                </p>
-                <p>
-                  Whether facilitating high-volume grain exports from the Indo-Gangetic plains or
-                  coordinating multimodal transit of precision industrial equipment into European
-                  manufacturing corridors, Meridian ensures accountability at every bill of lading.
-                </p>
-              </div>
-
-              {/* Thin brass lines connecting principles */}
-              <div className="grid grid-cols-2 gap-4 border-t border-[#D8CEBD] pt-6 font-mono text-xs text-[#161210]">
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 bg-[#C5A059]" />
-                  <span>Audited Supply Chains</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 bg-[#C5A059]" />
-                  <span>Phytosanitary Rigor</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 bg-[#C5A059]" />
-                  <span>Customs Acceleration</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 bg-[#C5A059]" />
-                  <span>Transparent Incoterms</span>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <Link
-                  to="/about"
-                  className="group inline-flex items-center gap-3 font-mono text-xs font-bold tracking-[0.2em] text-[#161210] uppercase hover:text-[#9E4E39] transition-colors"
-                >
-                  <span>READ OUR TRADING PHILOSOPHY</span>
-                  <ArrowRight
-                    size={15}
-                    className="transition-transform group-hover:translate-x-1 text-[#C5A059]"
-                  />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          4. TRADE CATALOGUE ("WHAT CROSSES OUR BORDERS")
-          ========================================================================= */}
-      <section className="relative bg-[#FAF7F2] py-24 lg:py-36 px-6 lg:px-12 border-y border-[#D8CEBD]">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end border-b border-[#D8CEBD] pb-8">
-            <div className="space-y-3">
-              <SectionLabel number="02">TRADE CATALOGUE</SectionLabel>
-              <h2 className="font-serif text-4xl font-bold tracking-tight text-[#161210] sm:text-5xl lg:text-6xl">
-                WHAT CROSSES
-                <br />
-                <span className="italic text-[#9E4E39]">OUR BORDERS.</span>
-              </h2>
-            </div>
-            <div className="max-w-md">
-              <p className="text-sm leading-relaxed text-[#6B625B]">
-                Explore our primary trade commodities. Each vertical maintains specialized
-                procurement protocols, international testing criteria, and custom export packing
-                standards.
+      <section className="relative z-20 border-b border-[#C5A059]/20 bg-[#161210] text-[#FAF7F2] py-8 sm:py-10">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12">
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="p-6 rounded-2xl border border-[#C5A059]/25 bg-[#1E1916]/80 backdrop-blur-md space-y-2">
+              <span className="font-mono text-[10px] font-bold tracking-widest text-[#C5A059] uppercase block">
+                01 · VERIFIED SOURCING
+              </span>
+              <h3 className="font-serif text-xl font-bold text-[#FAF7F2]">Trusted China Supplier Network</h3>
+              <p className="text-xs text-[#FAF7F2]/70 leading-relaxed">
+                Direct partnerships with ISO-certified machinery plants across Shanghai, Wuxi, Guangzhou, and Ningbo.
               </p>
-              <div className="mt-4">
-                <Link
-                  to="/products"
-                  className="inline-flex items-center gap-2 font-mono text-xs font-bold tracking-[0.2em] text-[#9E4E39] uppercase hover:underline"
-                >
-                  VIEW FULL 8-CATEGORY PORTFOLIO →
-                </Link>
-              </div>
             </div>
-          </div>
-
-          {/* Vertical Editorial Accordion / Hover Rows */}
-          <div className="mt-12 divide-y divide-[#D8CEBD]">
-            {categoryList.slice(0, 5).map((category, idx) => {
-              const isActive = activeCatalogueIdx === idx;
-              return (
-                <div
-                  key={category.id}
-                  onMouseEnter={() => setActiveCatalogueIdx(idx)}
-                  className={`group relative transition-all duration-500 py-8 lg:py-10 cursor-pointer ${
-                    isActive ? "bg-[#F4EFE6]/60 px-4 -mx-4" : ""
-                  }`}
-                >
-                  <div className="grid gap-6 lg:grid-cols-[80px_1.2fr_1fr_auto] lg:items-center">
-                    {/* Category Number */}
-                    <span
-                      className={`font-mono text-2xl lg:text-3xl font-bold transition-colors ${
-                        isActive ? "text-[#C5A059]" : "text-[#6B625B]/40 group-hover:text-[#161210]"
-                      }`}
-                    >
-                      {category.number}
-                    </span>
-
-                    {/* Category Name & Tagline */}
-                    <div>
-                      <h3
-                        className={`font-serif text-2xl sm:text-3xl lg:text-4xl font-bold transition-colors ${
-                          isActive
-                            ? "text-[#161210]"
-                            : "text-[#161210]/80 group-hover:text-[#161210]"
-                        }`}
-                      >
-                        {category.name}
-                      </h3>
-                      <p className="mt-2 text-xs md:text-sm text-[#6B625B] line-clamp-2">
-                        {category.tagline}
-                      </p>
-                    </div>
-
-                    {/* Expanded Preview Image on Desktop */}
-                    <div className="hidden lg:block overflow-hidden h-28 border border-[#D8CEBD] bg-[#161210]">
-                      <img
-                        src={category.heroImage}
-                        alt={category.name}
-                        className={`size-full object-cover transition-transform duration-700 ${
-                          isActive ? "scale-110 opacity-100" : "opacity-60 scale-100"
-                        }`}
-                      />
-                    </div>
-
-                    {/* Arrow CTA */}
-                    <div className="flex items-center justify-end">
-                      <Link
-                        to="/products"
-                        className={`flex size-12 items-center justify-center border transition-all ${
-                          isActive
-                            ? "border-[#161210] bg-[#161210] text-[#FAF7F2]"
-                            : "border-[#D8CEBD] text-[#6B625B] group-hover:border-[#C5A059] group-hover:text-[#161210]"
-                        }`}
-                      >
-                        <ArrowRight
-                          size={18}
-                          className="transition-transform group-hover:translate-x-1"
-                        />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            <div className="p-6 rounded-2xl border border-[#C5A059]/25 bg-[#1E1916]/80 backdrop-blur-md space-y-2">
+              <span className="font-mono text-[10px] font-bold tracking-widest text-[#C5A059] uppercase block">
+                02 · TECHNICAL INSPECTION
+              </span>
+              <h3 className="font-serif text-xl font-bold text-[#FAF7F2]">On-Site Quality Verification</h3>
+              <p className="text-xs text-[#FAF7F2]/70 leading-relaxed">
+                Full mechanical, electrical, and vibration evaluations conducted prior to export container stuffing.
+              </p>
+            </div>
+            <div className="p-6 rounded-2xl border border-[#C5A059]/25 bg-[#1E1916]/80 backdrop-blur-md space-y-2">
+              <span className="font-mono text-[10px] font-bold tracking-widest text-[#C5A059] uppercase block">
+                03 · DOORSTEP DELIVERY
+              </span>
+              <h3 className="font-serif text-xl font-bold text-[#FAF7F2]">End-to-End Import Logistics</h3>
+              <p className="text-xs text-[#FAF7F2]/70 leading-relaxed">
+                Fast-track customs clearance at Chennai, Mundra, and Nhava Sheva ports with direct mill delivery.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          5. IMPORT / EXPORT (TWO DRAMATICALLY DIFFERENT WORLDS)
+          3. FEATURED MACHINERY CATALOGUE
           ========================================================================= */}
-      <section className="relative">
-        <div className="grid lg:grid-cols-2">
-          {/* IMPORT: DEEP OLIVE WORLD */}
-          <article className="relative overflow-hidden bg-[#2D3325] p-10 sm:p-16 lg:p-24 text-[#FAF7F2]">
-            <span className="font-mono text-[10px] font-bold tracking-[0.3em] uppercase text-[#C5A059]">
-              [ INBOUND TRADE ENGINE ]
-            </span>
-            <h2 className="mt-4 font-serif text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-              BRINGING THE
-              <br />
-              <span className="italic text-[#C5A059]">WORLD IN.</span>
-            </h2>
-            <p className="mt-6 max-w-md text-sm leading-relaxed text-[#FAF7F2]/75">
-              Disciplined international procurement, factory audit verification, pre-loading
-              inspection, customs clearance coordination, and onward delivery right into regional
-              distribution centers.
-            </p>
-
-            {/* Inbound 5-Stage Process */}
-            <div className="mt-12 space-y-4 font-mono text-xs">
-              {[
-                ["01", "SOURCE", "Direct origin engagement across verified producer networks."],
-                ["02", "VERIFY", "Rigorous commercial credit and factory capability audit."],
-                ["03", "INSPECT", "Batch sampling, lab testing, and pre-dispatch stamp."],
-                ["04", "SHIP", "Ocean multimodal charter & inland bonded transit."],
-                ["05", "DELIVER", "Terminal handling & direct warehouse receipt."],
-              ].map(([num, stage, desc]) => (
-                <div
-                  key={num}
-                  className="flex items-baseline gap-4 border-b border-[#FAF7F2]/10 pb-3"
-                >
-                  <span className="text-[#C5A059] font-bold">{num}</span>
-                  <span className="font-bold tracking-widest text-[#FAF7F2] w-24">{stage}</span>
-                  <span className="text-[#FAF7F2]/60 font-sans text-xs">{desc}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-12">
-              <Link
-                to="/import"
-                className="inline-flex items-center gap-3 border border-[#C5A059] bg-[#1E2319] px-7 py-3.5 font-mono text-xs font-bold tracking-[0.2em] uppercase text-[#FAF7F2] hover:bg-[#C5A059] hover:text-[#161210] transition-colors"
-              >
-                <span>EXPLORE IMPORT SOLUTIONS</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-          </article>
-
-          {/* EXPORT: WARM TERRACOTTA WORLD */}
-          <article className="relative overflow-hidden bg-[#9E4E39] p-10 sm:p-16 lg:p-24 text-[#FAF7F2]">
-            <span className="font-mono text-[10px] font-bold tracking-[0.3em] uppercase text-[#161210]">
-              [ OUTBOUND TRADE EXPEDITION ]
-            </span>
-            <h2 className="mt-4 font-serif text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl text-[#FAF7F2]">
-              TAKING VALUE
-              <br />
-              <span className="italic text-[#FAF7F2]/80">OUT.</span>
-            </h2>
-            <p className="mt-6 max-w-md text-sm leading-relaxed text-[#FAF7F2]/90">
-              Transforming local production excellence into market-ready international commodities.
-              Packaging optimization, export certification, trade finance, and overseas
-              distribution.
-            </p>
-
-            {/* Outbound 5-Stage Process */}
-            <div className="mt-12 space-y-4 font-mono text-xs">
-              {[
-                ["01", "PREPARE", "Container stuffing, anti-moisture crating, export tagging."],
-                ["02", "CERTIFY", "Phytosanitary, Chamber certificates, ISO test sheets."],
-                ["03", "DOCUMENT", "Clean Bills of Lading, Packing Lists, consular clearance."],
-                ["04", "SHIP", "Bookings on tier-1 ocean liner routes with real-time tracking."],
-                ["05", "DELIVER", "Destination port clearance and buyer handover."],
-              ].map(([num, stage, desc]) => (
-                <div
-                  key={num}
-                  className="flex items-baseline gap-4 border-b border-[#FAF7F2]/20 pb-3"
-                >
-                  <span className="text-[#161210] font-bold">{num}</span>
-                  <span className="font-bold tracking-widest text-[#FAF7F2] w-24">{stage}</span>
-                  <span className="text-[#FAF7F2]/80 font-sans text-xs">{desc}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-12">
-              <Link
-                to="/export"
-                className="inline-flex items-center gap-3 border border-[#FAF7F2] bg-[#FAF7F2] px-7 py-3.5 font-mono text-xs font-bold tracking-[0.2em] uppercase text-[#161210] hover:bg-[#161210] hover:text-[#FAF7F2] hover:border-[#161210] transition-colors"
-              >
-                <span>EXPLORE EXPORT SERVICES</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          6. GLOBAL NETWORK ("CONNECTED BY TRADE")
-          ========================================================================= */}
-      <section className="relative overflow-hidden bg-[#161210] py-24 lg:py-36 px-6 lg:px-12 text-[#FAF7F2]">
+      <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12 bg-[#FAF7F2]">
         <div className="mx-auto max-w-[1440px]">
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div className="space-y-3">
-              <SectionLabel dark number="03">
-                GLOBAL REACH
-              </SectionLabel>
-              <h2 className="font-serif text-4xl font-bold tracking-tight text-[#FAF7F2] sm:text-5xl lg:text-6xl">
-                CONNECTED BY
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 pb-6 sm:pb-8 border-b border-[#D8CEBD]">
+            <div>
+              <SectionLabel number="01">FEATURED EQUIPMENT</SectionLabel>
+              <h2 className="mt-2 font-serif text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#161210]">
+                HIGH-PRECISION
                 <br />
-                <span className="text-[#C5A059] italic">TRADE.</span>
+                <span className="text-[#9E4E39] italic">TEXTILE MACHINERY.</span>
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-relaxed text-[#FAF7F2]/65">
-              Strategic presences across the Arabian Gulf, Indian subcontinent, European ports,
-              Southeast Asian logistics gateways, and North American distribution arteries.
-            </p>
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-1.5 font-mono text-xs font-bold tracking-wider uppercase text-[#9E4E39] hover:underline self-start sm:self-auto"
+            >
+              <span>View All {products.length} Machines →</span>
+            </Link>
           </div>
 
-          <InteractiveWorldMap />
-        </div>
-      </section>
-
-      {/* =========================================================================
-          7. TRADE JOURNEY (HORIZONTAL INTERACTIVE TIMELINE)
-          ========================================================================= */}
-      <section className="relative bg-[#FAF7F2] py-24 lg:py-36 px-6 lg:px-12 border-b border-[#D8CEBD]">
-        <div className="mx-auto max-w-[1440px]">
-          <SectionLabel number="04">THE METHODOLOGY</SectionLabel>
-          <div className="mt-4 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <h2 className="font-serif text-4xl font-bold text-[#161210] sm:text-5xl">
-              THE DISCIPLINED
-              <br />
-              <span className="text-[#9E4E39] italic">TRADE JOURNEY.</span>
-            </h2>
-            <span className="font-mono text-xs text-[#6B625B]">
-              [ INCOTERMS 2020 COMPLIANT WORKFLOW ]
-            </span>
-          </div>
-
-          {/* Horizontal Journey Pipeline */}
-          <div className="relative mt-16">
-            {/* Connected Brass Line */}
-            <div className="hidden lg:block absolute left-4 right-4 top-7 h-0.5 bg-[#C5A059]/40 z-0" />
-
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-6 relative z-10">
-              {[
-                {
-                  step: "01",
-                  title: "SOURCE",
-                  desc: "Direct farm-gate and mill identification backed by commercial credit analysis.",
-                },
-                {
-                  step: "02",
-                  title: "VERIFY",
-                  desc: "On-site facility evaluation, phytosanitary audit, and test batch validation.",
-                },
-                {
-                  step: "03",
-                  title: "PREPARE",
-                  desc: "Export-grade containment, VCI rust inhibitors, and moisture-sealed crating.",
-                },
-                {
-                  step: "04",
-                  title: "DOCUMENT",
-                  desc: "Consular legalization, Bills of Lading, and Letters of Credit alignment.",
-                },
-                {
-                  step: "05",
-                  title: "SHIP",
-                  desc: "Dedicated vessel bookings, reefer tracking, and maritime insurance coverage.",
-                },
-                {
-                  step: "06",
-                  title: "DELIVER",
-                  desc: "Port customs clearance, inland bonded transport, and consignee sign-off.",
-                },
-              ].map((item, i) => (
-                <div
-                  key={item.step}
-                  className="space-y-4 border-t border-[#C5A059] pt-4 lg:border-t-0 lg:pt-0"
-                >
-                  <div className="flex size-14 items-center justify-center border border-[#C5A059] bg-[#FAF7F2] font-mono text-sm font-bold text-[#161210] shadow-sm">
-                    {item.step}
-                  </div>
-                  <h4 className="font-serif text-lg font-bold text-[#161210]">{item.title}</h4>
-                  <p className="text-xs text-[#6B625B] leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          8. INDUSTRIES (FULL-WIDTH EDITORIAL LIST)
-          ========================================================================= */}
-      <section className="relative bg-[#161210] py-24 lg:py-36 px-6 lg:px-12 text-[#FAF7F2]">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="border-b border-[#FAF7F2]/10 pb-8 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div className="space-y-3">
-              <SectionLabel dark number="05">
-                KEY SECTORS
-              </SectionLabel>
-              <h2 className="font-serif text-4xl font-bold tracking-tight text-[#FAF7F2] sm:text-5xl lg:text-6xl">
-                INDUSTRIES WE SERVE.
-              </h2>
-            </div>
-            <p className="max-w-md text-sm text-[#FAF7F2]/65">
-              Each sector has unique storage variables, phytosanitary requirements, and cargo
-              handling tolerances. Hover any sector to inspect our coverage.
-            </p>
-          </div>
-
-          <div className="mt-8 divide-y divide-[#FAF7F2]/10">
-            {[
-              {
-                name: "AGRICULTURE & COMMODITIES",
-                sub: "Grains, Spices, Pulses & Oilseeds",
-                corridor: "South Asia · Middle East · Europe",
-              },
-              {
-                name: "FOOD PROCESSING & BEVERAGES",
-                sub: "Orthodox Tea, Specialty Coffee & Tropical Purees",
-                corridor: "East Africa · Europe · North America",
-              },
-              {
-                name: "HEAVY MANUFACTURING & STEEL",
-                sub: "Cold-Rolled Coils, Line Pipes & Alloy Extrusions",
-                corridor: "Far East · Middle East · Latin America",
-              },
-              {
-                name: "AUTOMOTIVE & COMMERCIAL FLEETS",
-                sub: "Forged Crankshafts, Brake Rotors & Transmission Gears",
-                corridor: "Europe · North America · Asia",
-              },
-              {
-                name: "CONSTRUCTION & INFRASTRUCTURE",
-                sub: "Structural Sections, Fasteners & Facade Profiles",
-                corridor: "Middle East · Africa · Europe",
-              },
-              {
-                name: "ENERGY & CAPITAL EQUIPMENT",
-                sub: "Industrial Diesel Generators & High-Pressure Pumps",
-                corridor: "UK · Africa · Southeast Asia",
-              },
-              {
-                name: "EXPORT PACKAGING & LOGISTICS",
-                sub: "Corrugated Export Shippers & Heat-Treated Pallets",
-                corridor: "Baltic Corridor · GCC · Asia",
-              },
-              {
-                name: "TEXTILES & NATURAL FIBERS",
-                sub: "Raw Cotton Bales, Organic Woven Linen & Canvas",
-                corridor: "India · Vietnam · Turkey · Portugal",
-              },
-            ].map((ind, i) => (
-              <div
-                key={ind.name}
-                className="group flex flex-col justify-between gap-4 py-7 transition-all duration-300 hover:bg-[#FAF7F2]/5 hover:px-4 sm:flex-row sm:items-center cursor-pointer"
+          {/* Industrial Machine Cards Grid */}
+          <div className="mt-8 sm:mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {featuredProducts.map((machine) => (
+              <article
+                key={machine.id}
+                className="group rounded-2xl border border-[#D8CEBD] bg-[#FAF7F2] p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-[#C5A059] hover:shadow-xl hover:bg-[#F4EFE6]"
               >
-                <div className="flex items-baseline gap-6">
-                  <span className="font-mono text-xs text-[#C5A059]">0{i + 1}</span>
-                  <div>
-                    <h3 className="font-serif text-2xl sm:text-3xl font-bold tracking-wide text-[#FAF7F2] group-hover:text-[#C5A059] transition-colors">
-                      {ind.name}
-                    </h3>
-                    <span className="font-mono text-xs text-[#FAF7F2]/50 block mt-1">
-                      {ind.sub}
+                <div>
+                  {/* Machine Image (4:3 ratio) */}
+                  <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-[#D8CEBD] bg-[#161210]">
+                    <img
+                      src={machine.image}
+                      alt={machine.name}
+                      className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+
+                  {/* Machine Meta */}
+                  <div className="mt-4 space-y-1.5">
+                    <span className="font-mono text-[10px] font-bold text-[#C5A059] uppercase block tracking-wider">
+                      {machine.category}
                     </span>
+                    <h3 className="font-serif text-lg font-bold text-[#161210] group-hover:text-[#9E4E39] transition-colors line-clamp-2">
+                      {machine.name}
+                    </h3>
+                    <p className="text-xs text-[#6B625B] font-mono">
+                      Manufacturer: <strong className="text-[#161210]">{machine.manufacturer}</strong>
+                    </p>
+                    <p className="text-xs text-[#6B625B] font-mono">
+                      Origin: <strong className="text-[#161210]">🇨🇳 {machine.country}</strong>
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-6">
-                  <span className="font-mono text-[11px] text-[#C5A059]/80 hidden md:block">
-                    {ind.corridor}
+
+                {/* Card Actions */}
+                <div className="mt-5 pt-4 border-t border-[#D8CEBD] flex items-center justify-between">
+                  <Link
+                    to="/products/$slug"
+                    params={{ slug: machine.slug }}
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-[#161210] uppercase hover:text-[#9E4E39] transition-colors"
+                  >
+                    <span>View Machine</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                  <span className="text-[10px] font-mono text-[#6B625B] bg-[#EBE3D3] px-2 py-0.5 rounded-md">
+                    Verified
                   </span>
-                  <div className="flex size-10 items-center justify-center border border-[#FAF7F2]/20 text-[#FAF7F2] group-hover:border-[#C5A059] group-hover:text-[#C5A059] group-hover:translate-x-1 transition-all">
-                    <ArrowRight size={16} />
-                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          4. CHINA → INDIA SUPPLY NETWORK TEASER
+          ========================================================================= */}
+      <section className="bg-[#161210] py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12 text-[#FAF7F2] border-t border-[#C5A059]/30">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[#FAF7F2]/15">
+            <div>
+              <SectionLabel dark number="02">STRATEGIC CORRIDOR</SectionLabel>
+              <h2 className="mt-2 font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#FAF7F2]">
+                OUR CHINA–INDIA
+                <br />
+                <span className="text-[#DFBA6F] italic">SUPPLY NETWORK.</span>
+              </h2>
+            </div>
+            <Link
+              to="/network"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#C5A059] px-4 sm:px-6 py-2.5 sm:py-3 font-mono text-xs font-bold uppercase tracking-wider text-[#161210] hover:bg-[#FAF7F2] transition shadow-md w-auto self-start sm:self-auto"
+            >
+              <span>Inspect Map</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {networkLocations.slice(0, 4).map((loc) => (
+              <div
+                key={loc.id}
+                className="p-5 sm:p-6 rounded-2xl border border-[#C5A059]/25 bg-[#1E1916] space-y-3"
+              >
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-[#DFBA6F] font-bold">
+                    {loc.country === "China" ? "🇨🇳" : "🇮🇳"} {loc.country}
+                  </span>
+                  <span className="text-[10px] text-[#FAF7F2]/50 uppercase">{loc.type}</span>
+                </div>
+                <h4 className="font-serif text-lg font-bold text-[#FAF7F2]">{loc.name}</h4>
+                <p className="text-xs text-[#FAF7F2]/70 leading-relaxed line-clamp-2">
+                  {loc.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          5. INDUSTRIES WE SERVE
+          ========================================================================= */}
+      <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12 bg-[#FAF7F2] border-t border-[#D8CEBD]">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-[#D8CEBD]">
+            <div>
+              <SectionLabel number="03">SECTOR SPECIFICATIONS</SectionLabel>
+              <h2 className="mt-2 font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#161210]">
+                INDUSTRIES
+                <br />
+                <span className="text-[#9E4E39] italic">WE SERVE.</span>
+              </h2>
+            </div>
+            <Link
+              to="/industries"
+              className="inline-flex items-center gap-2 font-mono text-xs font-bold tracking-[0.2em] uppercase text-[#9E4E39] hover:underline"
+            >
+              <span>VIEW ALL INDUSTRIES & MACHINES →</span>
+            </Link>
+          </div>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredIndustries.map((ind) => (
+              <div
+                key={ind.id}
+                className="group rounded-2xl border border-[#D8CEBD] bg-[#FAF7F2] p-6 space-y-4 transition-all hover:border-[#C5A059] hover:shadow-xl hover:bg-[#F4EFE6]"
+              >
+                <div className="aspect-[16/9] w-full overflow-hidden rounded-xl border border-[#D8CEBD] bg-[#161210]">
+                  <img
+                    src={ind.image}
+                    alt={ind.name}
+                    className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+                <h3 className="font-serif text-xl font-bold text-[#161210] group-hover:text-[#9E4E39] transition-colors">
+                  {ind.name}
+                </h3>
+                <p className="text-xs text-[#6B625B] leading-relaxed line-clamp-3">
+                  {ind.description}
+                </p>
+                <div className="pt-2">
+                  <Link
+                    to="/industries"
+                    className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#C5A059] uppercase hover:underline"
+                  >
+                    <span>VIEW SUITABLE MACHINERY →</span>
+                  </Link>
                 </div>
               </div>
             ))}
           </div>
-
-          <div className="mt-12 text-center">
-            <Link
-              to="/industries"
-              className="inline-flex items-center gap-3 border border-[#C5A059] bg-[#C5A059] px-8 py-4 font-mono text-xs font-bold tracking-[0.2em] text-[#161210] uppercase hover:bg-[#FAF7F2] transition-colors"
-            >
-              <span>INSPECT INDUSTRY SPECIFICATIONS</span>
-              <ArrowRight size={14} />
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* =========================================================================
-          9. QUALITY SECTION ("TRUST IS PART OF THE CARGO")
+          6. WHY CONFIDENT TEXTILES MACHINERY?
           ========================================================================= */}
-      <section className="relative overflow-hidden bg-[#1D1714] py-24 lg:py-36 px-6 lg:px-12 text-[#FAF7F2] border-y border-[#C5A059]/25">
+      <section className="bg-[#1D1714] py-16 sm:py-24 px-4 sm:px-6 lg:px-12 text-[#FAF7F2] border-y border-[#C5A059]/25">
         <div className="mx-auto max-w-[1440px]">
-          <div className="text-center max-w-3xl mx-auto space-y-4">
-            <SectionLabel dark number="06">
-              INTEGRITY & ASSURANCE
-            </SectionLabel>
-            <h2 className="font-serif text-4xl font-bold sm:text-5xl lg:text-6xl">
-              TRUST IS PART
-              <br />
-              <span className="text-[#C5A059] italic">OF THE CARGO.</span>
+          <div className="max-w-3xl space-y-3 mb-12">
+            <SectionLabel dark number="04">KEY ADVANTAGES</SectionLabel>
+            <h2 className="font-serif text-3xl sm:text-5xl font-bold">
+              Why Confident Textiles Machinery?
             </h2>
-            <p className="text-sm md:text-base leading-relaxed text-[#FAF7F2]/70">
-              International trade cannot withstand guesswork. We anchor our execution around six
-              non-negotiable quality disciplines.
+            <p className="text-sm text-[#FAF7F2]/75 leading-relaxed">
+              We eliminate the risks of cross-border machinery procurement through hands-on technical verification, contractual transparency, and direct port facilitation.
             </p>
           </div>
 
-          {/* 6 Quality Principles */}
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: "QUALITY CONTROL",
-                desc: "Certified independent surveyor inspection (SGS/Bureau Veritas compatible protocols) prior to container loading.",
-                icon: ShieldCheck,
-              },
-              {
-                title: "BATCH TRACEABILITY",
-                desc: "Full farm-to-port or mill-to-consignee batch provenance recorded in every trade packet.",
-                icon: Layers,
-              },
-              {
-                title: "REGULATORY COMPLIANCE",
-                desc: "Destination country import standards, customs classification codes, and phytosanitary rules strictly verified.",
-                icon: Scale,
-              },
-              {
-                title: "PRE-SHIPMENT INSPECTION",
-                desc: "Moisture, granulation, tensile strength, and packaging seal integrity validated with photographic logs.",
-                icon: Search,
-              },
-              {
-                title: "LEGAL DOCUMENTATION",
-                desc: "Clean on-board ocean bills of lading, consular invoices, and certificates of origin without ambiguity.",
-                icon: FileCheck2,
-              },
-              {
-                title: "ROUTE RELIABILITY",
-                desc: "Long-standing carrier partnerships ensuring container slot commitments even during peak seasonal runs.",
-                icon: Ship,
-              },
-            ].map((p, i) => {
-              const Icon = p.icon;
-              return (
-                <div
-                  key={p.title}
-                  className="group relative border border-[#C5A059]/20 bg-[#161210] p-8 transition-colors duration-300 hover:border-[#C5A059]"
-                >
-                  <div className="flex items-center justify-between">
-                    <Icon size={26} className="text-[#C5A059]" />
-                    <span className="font-mono text-xs text-[#FAF7F2]/30">0{i + 1}</span>
-                  </div>
-                  <h3 className="mt-6 font-serif text-xl font-bold tracking-wide text-[#FAF7F2]">
-                    {p.title}
-                  </h3>
-                  <p className="mt-3 text-xs leading-relaxed text-[#FAF7F2]/65 font-sans">
-                    {p.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Client Certification Placeholder Area */}
-          <div className="mt-12 border border-[#FAF7F2]/10 bg-[#161210]/50 p-6 text-center">
-            <span className="font-mono text-[10px] tracking-[0.25em] text-[#C5A059] uppercase block mb-1">
-              [ CERTIFICATION PARTNERS ]
-            </span>
-            <div className="flex flex-wrap items-center justify-center gap-8 pt-3 text-xs font-mono text-[#FAF7F2]/50">
-              <span>ISO 9001:2015 AUDITED</span>
-              <span>•</span>
-              <span>PHYTOSANITARY BOARD COMPLIANT</span>
-              <span>•</span>
-              <span>HACCP FOOD SAFETY ACCREDITATION</span>
-              <span>•</span>
-              <span>INCOTERMS 2020 REGISTERED</span>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="p-6 rounded-2xl border border-[#C5A059]/25 bg-[#161210] space-y-3">
+              <CheckCircle2 size={24} className="text-[#C5A059]" />
+              <h4 className="font-serif text-lg font-bold">China Supplier Network</h4>
+              <p className="text-xs text-[#FAF7F2]/70 leading-relaxed">
+                Direct partnerships with audited manufacturers eliminating broker markups and opacity.
+              </p>
+            </div>
+            <div className="p-6 rounded-2xl border border-[#C5A059]/25 bg-[#161210] space-y-3">
+              <ShieldCheck size={24} className="text-[#C5A059]" />
+              <h4 className="font-serif text-lg font-bold">Machinery Verification</h4>
+              <p className="text-xs text-[#FAF7F2]/70 leading-relaxed">
+                Pre-shipment engineering audits validating power, speed, calibration, and crating integrity.
+              </p>
+            </div>
+            <div className="p-6 rounded-2xl border border-[#C5A059]/25 bg-[#161210] space-y-3">
+              <Ship size={24} className="text-[#C5A059]" />
+              <h4 className="font-serif text-lg font-bold">Import Support</h4>
+              <p className="text-xs text-[#FAF7F2]/70 leading-relaxed">
+                Full Incoterms 2020 management, marine cargo insurance, and Indian customs acceleration.
+              </p>
+            </div>
+            <div className="p-6 rounded-2xl border border-[#C5A059]/25 bg-[#161210] space-y-3">
+              <Layers size={24} className="text-[#C5A059]" />
+              <h4 className="font-serif text-lg font-bold">Industry Solutions</h4>
+              <p className="text-xs text-[#FAF7F2]/70 leading-relaxed">
+                Tailored machine configurations matching the specific raw materials and power grids of Indian mills.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          10. TRADE INQUIRY MANIFEST FORM ("LET'S MOVE SOMETHING")
+          7. OWNER / DIRECTOR TEASER SECTION
           ========================================================================= */}
-      <section id="inquiry" className="relative py-24 lg:py-36 bg-[#F4EFE6] px-6 lg:px-12">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 bg-[#F4EFE6]">
         <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-16 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            {/* Left Column Statement */}
-            <div className="space-y-6">
-              <SectionLabel number="07">TRADE QUOTATION</SectionLabel>
-              <h2 className="font-serif text-4xl font-bold text-[#161210] sm:text-5xl lg:text-6xl leading-[1.05]">
-                LET’S MOVE
-                <br />
-                <span className="text-[#9E4E39] italic">SOMETHING.</span>
-              </h2>
-              <p className="text-base leading-relaxed text-[#6B625B]">
-                Initiate a formal commercial trade inquiry. Our trade desk coordinates route
-                logistics, supplier allocation, and contractual pricing based on current ocean
-                indices.
-              </p>
-
-              {/* Trade Desk Details */}
-              <div className="space-y-4 pt-6 border-t border-[#D8CEBD] text-xs font-mono">
-                <div className="flex items-center gap-3 text-[#161210]">
-                  <span className="text-[#C5A059]">●</span>
-                  <span>Response Time: Within 24 hours</span>
-                </div>
-                <div className="flex items-center gap-3 text-[#161210]">
-                  <span className="text-[#C5A059]">●</span>
-                  <span>Contract Terms: FOB, CIF, CFR, DAP</span>
-                </div>
-                <div className="flex items-center gap-3 text-[#161210]">
-                  <span className="text-[#C5A059]">●</span>
-                  <span>Direct Desk: trade@meridiantrade.com</span>
+          <div className="rounded-3xl border border-[#C5A059]/40 bg-[#161210] p-6 sm:p-10 lg:p-14 text-[#FAF7F2] shadow-2xl">
+            <div className="grid gap-8 lg:grid-cols-[280px_1fr] lg:items-center">
+              <div className="overflow-hidden rounded-2xl border-2 border-[#C5A059] aspect-[4/5] bg-[#1E1916]">
+                <img
+                  src={ownerProfile.photo}
+                  alt={ownerProfile.name}
+                  className="size-full object-cover"
+                />
+              </div>
+              <div className="space-y-4">
+                <span className="font-mono text-xs text-[#C5A059] tracking-widest uppercase font-bold">
+                  [ EXECUTIVE LEADERSHIP ]
+                </span>
+                <h3 className="font-serif text-2xl sm:text-4xl font-bold">{ownerProfile.name}</h3>
+                <p className="text-xs text-[#DFBA6F] font-mono font-semibold">
+                  {ownerProfile.designation} · {ownerProfile.company}
+                </p>
+                <p className="text-xs sm:text-sm text-[#FAF7F2]/80 leading-relaxed">
+                  {ownerProfile.biography}
+                </p>
+                <div className="pt-2">
+                  <Link
+                    to="/owner"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#C5A059] px-4 sm:px-6 py-2.5 sm:py-3 font-mono text-xs font-bold uppercase tracking-wider text-[#161210] hover:bg-[#FAF7F2] transition shadow-md w-auto"
+                  >
+                    <span>Read Owner Profile</span>
+                    <ArrowRight size={13} />
+                  </Link>
                 </div>
               </div>
-            </div>
-
-            {/* Right Column Manifest Form */}
-            <div>
-              <InquiryForm quote />
             </div>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          11. CONTACT ("WHERE TRADE BEGINS")
+          8. NEED TEXTILE MACHINERY? REQUIREMENT CTA
           ========================================================================= */}
-      <section className="relative bg-[#FAF7F2] py-24 lg:py-36 px-6 lg:px-12 border-t border-[#D8CEBD]">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-16 lg:grid-cols-2">
-            <div className="space-y-6">
-              <SectionLabel number="08">HEADQUARTERS</SectionLabel>
-              <h2 className="font-serif text-4xl font-bold text-[#161210] sm:text-5xl lg:text-6xl">
-                WHERE TRADE
-                <br />
-                <span className="text-[#C5A059] italic">BEGINS.</span>
-              </h2>
-              <p className="text-base text-[#6B625B] leading-relaxed max-w-md">
-                Our operations coordinators are situated in key maritime commercial zones to ensure
-                unbroken oversight across global trading hours.
-              </p>
-
-              <div className="grid gap-6 pt-6 border-t border-[#D8CEBD] sm:grid-cols-2 font-mono text-xs">
-                <div>
-                  <b className="block font-serif text-base text-[#161210] mb-1 font-bold">
-                    Primary Trade Office
-                  </b>
-                  <p className="text-[#6B625B] leading-relaxed">
-                    Meridian Trade Towers, Level 42
-                    <br />
-                    Maritime Commercial District
-                    <br />
-                    Port Financial Center
-                  </p>
-                </div>
-                <div>
-                  <b className="block font-serif text-base text-[#161210] mb-1 font-bold">
-                    Operating Hours
-                  </b>
-                  <p className="text-[#6B625B] leading-relaxed">
-                    Monday — Friday: 08:00 – 19:00 UTC
-                    <br />
-                    Saturday: 09:00 – 14:00 UTC
-                    <br />
-                    Vessel Dispatch: 24/7 Monitoring
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stylized Port Coordinate Card */}
-            <div className="border border-[#C5A059] bg-[#161210] p-8 sm:p-12 text-[#FAF7F2] shadow-2xl relative">
-              <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#C5A059] block mb-4">
-                [ PORT RADAR & DESK CONTACT ]
-              </span>
-              <div className="space-y-6">
-                <div>
-                  <span className="font-mono text-xs text-[#FAF7F2]/50 block">
-                    COMMERCIAL INQUIRIES
-                  </span>
-                  <a
-                    href="mailto:trade@meridiantrade.com"
-                    className="font-serif text-2xl font-bold text-[#C5A059] hover:underline"
-                  >
-                    trade@meridiantrade.com
-                  </a>
-                </div>
-                <div>
-                  <span className="font-mono text-xs text-[#FAF7F2]/50 block">
-                    DIRECT OPERATIONS TELEPHONE
-                  </span>
-                  <a
-                    href="tel:+18004928723"
-                    className="font-serif text-2xl font-bold text-[#FAF7F2] hover:underline"
-                  >
-                    +1 (800) 492-TRADE
-                  </a>
-                </div>
-                <div className="pt-6 border-t border-[#FAF7F2]/10 font-mono text-xs text-[#FAF7F2]/60">
-                  <div className="flex justify-between py-1">
-                    <span>RADIO FREQ</span>
-                    <span className="text-[#C5A059]">VHF CH 16 / CH 72</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>PORT LAT/LON</span>
-                    <span>25°15' N / 55°18' E</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>DISPATCH STATUS</span>
-                    <span className="text-[#C5A059]">BERTHS ACTIVE</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <section className="py-14 sm:py-24 px-5 sm:px-6 lg:px-12 bg-[#FAF7F2] border-t border-[#D8CEBD] text-center">
+        <div className="mx-auto max-w-2xl space-y-4 sm:space-y-5">
+          <span className="font-mono text-[10.5px] sm:text-xs font-bold tracking-[0.2em] uppercase text-[#9E4E39]">
+            [ COMMERCIAL INQUIRY DESK ]
+          </span>
+          <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-[#161210] tracking-tight">
+            Need Textile Machinery?
+          </h2>
+          <p className="text-xs sm:text-base text-[#6B625B] leading-relaxed max-w-lg mx-auto font-sans">
+            Tell us your production requirements, fiber type, and target output. Our trade and engineering team will evaluate and quote suitable Chinese machinery delivered right to your factory in India.
+          </p>
+          <div className="pt-2">
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#161210] px-5 sm:px-8 py-2.5 sm:py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-[#FAF7F2] hover:bg-[#9E4E39] transition-colors shadow-md w-auto mx-auto"
+            >
+              <span>Submit Requirement</span>
+              <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>

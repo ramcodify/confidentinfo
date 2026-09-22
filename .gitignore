@@ -15,6 +15,9 @@ dist-ssr
 .tanstack/**
 .nitro
 *.local
+*.tsbuildinfo
+bun.lock
+bunfig.toml
 
 # Wrangler / Cloudflare
 .wrangler/
@@ -31,3 +34,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+scratch/

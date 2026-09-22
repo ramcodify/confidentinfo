@@ -1,29 +1,47 @@
-# Welcome to your Lovable project
+# Confident Textiles Machinery
 
-This project was built with [Lovable](https://lovable.dev).
+**China Manufacturing → Machinery Sourcing → Quality Verification → Import & Logistics → Indian Textile Industries**
 
-## Build with Lovable
+Confident Textiles Machinery specializes in sourcing, technical evaluation, and facilitating the import of high-precision textile machinery from trusted Chinese manufacturers directly to textile and manufacturing enterprises across India.
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+---
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+## Key Capabilities
+
+- **China Supplier Identification & Factory Audits**: On-site evaluations of leading Chinese machinery manufacturers across Shanghai, Guangzhou, Shenzhen, Ningbo, and Wuxi.
+- **Pre-Shipment Quality Verification**: Engineering calibration checks, component stress tests, and ISPM-15 compliant export crating.
+- **End-to-End Import & Port Logistics**: Multimodal ocean freight bookings, consular documentation, and expedited customs clearance across major Indian maritime gateways (Chennai, Mumbai / Nhava Sheva, Mundra, Kolkata).
+- **Industry Solutions**: Dedicated machinery solutions for Spinning, Weaving, Knitting, Dyeing, Finishing, Garment Manufacturing, and Technical Textiles.
+- **Secure Owner Admin Dashboard**: Full CRUD management for products, industry sectors, network locations, company information, and customer enquiries.
+
+---
+
+## Project Structure
+
+```
+confident-textiles-machinery/
+├── src/
+│   ├── components/       # UI components (Navbar, Footer, Forms, Cards)
+│   ├── data/             # Static & default datasets
+│   ├── lib/              # Data store (machinery-store.ts), auth, utilities
+│   ├── routes/           # TanStack Router pages (Home, About, Products, Network, Industries, Owner, Contact, Admin)
+│   └── styles.css        # Core typography, design tokens, and glassmorphism
+```
+
+---
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+```bash
+# Install dependencies
+npm install
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+# Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+The application runs locally on `http://localhost:8080`.
+Admin credentials: ID `admin` | Password `admin123`.

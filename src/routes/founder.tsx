@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/global-network")({
+export const Route = createFileRoute("/founder")({
   beforeLoad: () => {
-    throw redirect({ to: "/network" });
+    throw redirect({ to: "/owner" });
   },
 });

@@ -1,24 +1,35 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowRight, ArrowUpRight, Check, Compass, ShieldCheck } from "lucide-react";
-import { PageHero, SectionLabel } from "../components/site";
-import { categoryList } from "../data/products";
-import terminalImage from "../assets/industry-terminal.jpg";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  CheckCircle2,
+  Compass,
+  Factory,
+  Layers,
+  MapPin,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
+import { PageHero, SectionLabel, MarqueeTicker } from "../components/site";
+import { useMachineryStore, type TextileIndustry } from "../lib/machinery-store";
+import industryTerminal from "../assets/industry-terminal.jpg";
 
 export const Route = createFileRoute("/industries")({
   head: () => ({
     meta: [
-      { title: "Industries We Serve — Sector Expertise | Meridian Trade Co." },
+      { title: "Indian Textile Industries We Equip — Machinery Sourcing | Confident" },
       {
         name: "description",
         content:
-          "Cross-border supply expertise across Agriculture, Food Processing, Manufacturing, Automotive, Construction, Energy, Retail, and Packaging.",
+          "Equipping Indian spinning, weaving, knitting, dyeing, and denim manufacturing mills with precision machinery sourced and verified from leading Chinese manufacturers.",
       },
-      { property: "og:title", content: "Industry Sectors | Meridian Trade Co." },
+      { property: "og:title", content: "Textile Industries Served | Confident Machinery" },
       {
         property: "og:description",
         content:
-          "Detailed supply chain profiles, regulatory tolerances, and specialized handling protocols.",
+          "Direct machinery supply channels from China to India's major textile production hubs.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -28,242 +39,298 @@ export const Route = createFileRoute("/industries")({
 });
 
 function IndustriesPage() {
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-  const categoryImages = categoryList.map((category) => category.heroImage);
+  const { industries, products } = useMachineryStore();
+  const [selectedIndustryId, setSelectedIndustryId] = useState<string | null>(null);
 
-  const industries = [
-    {
-      number: "01",
-      name: "AGRICULTURE & COMMODITIES",
-      tagline: "Grains, Spices, Pulses & Oilseeds",
-      desc: "Farm-gate aggregation, Sortex optical grading, bulk bag packaging, and fumigated oceanic transport for agricultural staples.",
-      image: categoryImages[0],
-      compliance: [
-        "Phytosanitary Certificates",
-        "Aflatoxin & Heavy Metal Screening",
-        "Non-GMO Verification",
-      ],
-    },
-    {
-      number: "02",
-      name: "FOOD PROCESSING & BEVERAGES",
-      tagline: "Orthodox Tea, Green Arabica & Aseptic Purees",
-      desc: "Temperature-controlled reefer container logistics, hermetic barrier packaging, and sanitary import documentation.",
-      image: categoryImages[1],
-      compliance: ["ISO 22000 / FSSC 22000", "US FDA Registration", "Halal & Kosher Audits"],
-    },
-    {
-      number: "03",
-      name: "HEAVY MANUFACTURING & STEEL",
-      tagline: "Cold-Rolled Coils, Line Pipes & Alloy Extrusions",
-      desc: "Direct mill contracts, ultrasonic non-destructive testing, and heavy-duty maritime stowage for industrial manufacturing.",
-      image: categoryImages[2],
-      compliance: [
-        "EN 10204 3.1 Mill Test Reports",
-        "ASTM & API Monograms",
-        "Dimensional Verification",
-      ],
-    },
-    {
-      number: "04",
-      name: "AUTOMOTIVE & COMMERCIAL FLEETS",
-      tagline: "Forged Crankshafts, Brake Rotors & Gears",
-      desc: "Precision engineering supply pipelines, VCI anti-corrosion preservation, and just-in-time container deliveries to assembly plants.",
-      image: categoryImages[4],
-      compliance: [
-        "IATF 16949 Certified Foundries",
-        "PPAP Level 3 Documentation",
-        "ECE R90 Certification",
-      ],
-    },
-    {
-      number: "05",
-      name: "CONSTRUCTION & INFRASTRUCTURE",
-      tagline: "Structural Steel, Fasteners & Facade Profiles",
-      desc: "Project-based sourcing, breakbulk ocean chartering, and jobsite-delivered structural materials for major development corridors.",
-      image:
-        "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=1200&q=85",
-      compliance: [
-        "CE Structural Conformity",
-        "Zinc Coating Thickness Logs",
-        "Yield Stress Audits",
-      ],
-    },
-    {
-      number: "06",
-      name: "ENERGY & CAPITAL EQUIPMENT",
-      tagline: "Diesel Power Generators & High-Pressure Pumps",
-      desc: "Heavy-lift crating, custom chassis rigging, and marine warranty surveyor sign-offs for critical power and processing machinery.",
-      image: categoryImages[3],
-      compliance: [
-        "ATEX Explosion Proof Zone 1",
-        "ISO 8528 Generator Standards",
-        "CE Machinery Directive",
-      ],
-    },
-    {
-      number: "07",
-      name: "EXPORT PACKAGING & LOGISTICS",
-      tagline: "Corrugated Shippers & Heat-Treated Pallets",
-      desc: "Transit-engineered protective supplies, moisture barrier films, and heat-treated wooden platforms ensuring damage-free ocean carriage.",
-      image: categoryImages[5],
-      compliance: [
-        "IPPC ISPM-15 Heat Treatment Stamps",
-        "FEFCO Box Standards",
-        "FSC Recycled Certification",
-      ],
-    },
-    {
-      number: "08",
-      name: "TEXTILES & NATURAL FIBERS",
-      tagline: "Combed Cotton Bales & Woven Organic Canvas",
-      desc: "Direct spinning mill consignments, staple fiber micronaire testing, and moisture-controlled ocean container stuffing.",
-      image: categoryImages[7],
-      compliance: [
-        "GOTS Organic Certification",
-        "OEKO-TEX Standard 100",
-        "Cotton Corporation Lab Reports",
-      ],
-    },
-  ];
+  const activeIndustry = selectedIndustryId
+    ? industries.find((ind) => ind.id === selectedIndustryId)
+    : null;
+
+  // Filter matching machines for active industry
+  const matchingMachines = activeIndustry
+    ? (products || []).filter(
+        (m) =>
+          (activeIndustry.suitableMachinery || []).some((sm) =>
+            (m.name && m.name.toLowerCase().includes(sm.toLowerCase())) ||
+            (sm && sm.toLowerCase().includes((m.name || "").toLowerCase())) ||
+            (m.category && m.category.toLowerCase().includes(sm.toLowerCase()))
+          ) ||
+          (Array.isArray(m.applications) &&
+            m.applications.some((app) =>
+              (app && app.toLowerCase().includes((activeIndustry.name || "").toLowerCase())) ||
+              (activeIndustry.name && activeIndustry.name.toLowerCase().includes(app.toLowerCase()))
+            ))
+      )
+    : [];
 
   return (
-    <div className="bg-[#F4EFE6] text-[#161210]">
-      {/* Page Hero */}
+    <div className="bg-[#FAF7F2] text-[#161210]">
+      {/* 1. Page Hero */}
       <PageHero
-        eyebrow="SECTOR EXPERTISE"
+        eyebrow="CHINA TO INDIA TEXTILE INDUSTRIAL CORRIDORS"
         categoryNumber="INDUSTRIES"
-        title="BUILT FOR ESSENTIAL COMMERCE."
-        copy="Every industry enforces distinct quality tolerances, customs clearance classifications, and transit handling rules. Our dedicated sector desks deliver tailored commercial execution."
-        image={terminalImage}
+        title="EQUIPPING INDIA'S TEXTILE INDUSTRIAL VERTICALS."
+        copy="From Tirupur's knitwear corridors to Surat's weaving epicenters, Coimbatore's spinning mills, and Ludhiana's wool processing plants. We source, inspect, and deliver high-precision Chinese textile machinery tailored to specific Indian production verticals."
+        image={industryTerminal}
       />
 
-      {/* Editorial Horizontal List Section */}
-      <section className="mx-auto max-w-[1440px] px-6 py-24 lg:px-12 lg:py-36">
-        <div className="border-b border-[#D8CEBD] pb-8 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <div className="space-y-3">
+      {/* 2. Real-Time Industry Telemetry Metrics Strip */}
+      <section className="border-b border-[#C5A059]/30 bg-[#161210] py-6 sm:py-8 text-[#FAF7F2]">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="rounded-xl border border-[#C5A059]/20 bg-[#1E1916]/80 p-3.5 sm:p-5 backdrop-blur-md space-y-1">
+              <span className="font-mono text-[9px] sm:text-[10px] text-[#C5A059] font-bold block uppercase tracking-wider">
+                SECTORS EQUIPPED
+              </span>
+              <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAF7F2]">
+                6 Verticals
+              </div>
+              <span className="text-[10px] sm:text-[11px] text-[#FAF7F2]/60 font-mono block">
+                Spinning, Weaving, Knitting &amp; Dyeing
+              </span>
+            </div>
+
+            <div className="rounded-xl border border-[#C5A059]/20 bg-[#1E1916]/80 p-3.5 sm:p-5 backdrop-blur-md space-y-1">
+              <span className="font-mono text-[9px] sm:text-[10px] text-[#C5A059] font-bold block uppercase tracking-wider">
+                MILL HUBS SERVED
+              </span>
+              <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAF7F2]">
+                12 Clusters
+              </div>
+              <span className="text-[10px] sm:text-[11px] text-[#FAF7F2]/60 font-mono block">
+                Surat, Tirupur, Coimbatore &amp; Ludhiana
+              </span>
+            </div>
+
+            <div className="rounded-xl border border-[#C5A059]/20 bg-[#1E1916]/80 p-3.5 sm:p-5 backdrop-blur-md space-y-1">
+              <span className="font-mono text-[9px] sm:text-[10px] text-[#C5A059] font-bold block uppercase tracking-wider">
+                POWER GRID SPEC
+              </span>
+              <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-emerald-400">
+                415V / 50Hz
+              </div>
+              <span className="text-[10px] sm:text-[11px] text-[#FAF7F2]/60 font-mono block">
+                Indian Grid Synchronized Motors
+              </span>
+            </div>
+
+            <div className="rounded-xl border border-[#C5A059]/20 bg-[#1E1916]/80 p-3.5 sm:p-5 backdrop-blur-md space-y-1">
+              <span className="font-mono text-[9px] sm:text-[10px] text-[#C5A059] font-bold block uppercase tracking-wider">
+                MACHINERY DELIVERED
+              </span>
+              <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-[#DFBA6F]">
+                500+ Units
+              </div>
+              <span className="text-[10px] sm:text-[11px] text-[#FAF7F2]/60 font-mono block">
+                Factory Delivery to Production Floor
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Marquee Ticker */}
+      <MarqueeTicker />
+
+      {/* 4. Main Interactive Industry Directory */}
+      <section className="mx-auto max-w-[1440px] 2xl:max-w-[1680px] 3xl:max-w-[2000px] px-4 sm:px-6 py-16 lg:px-12 2xl:px-16 lg:py-24">
+        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-[#D8CEBD] pb-6 mb-12 gap-4">
+          <div>
             <SectionLabel number="01">SECTOR PORTFOLIO</SectionLabel>
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-[#161210]">
-              The 8 Industry Desks
+            <h2 className="mt-2 font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#161210]">
+              Textile Sectors We Power
             </h2>
           </div>
-          <p className="max-w-md text-xs font-mono text-[#6B625B]">
-            Hover any sector row to reveal the operational image, trade overview, and certified
-            testing standards.
+          <p className="max-w-md text-xs sm:text-sm text-[#6B625B]">
+            Select any textile sector to view its typical Indian manufacturing hubs, compliance requirements, and suitable Chinese machinery.
           </p>
         </div>
 
-        {/* Large Editorial Rows */}
-        <div className="mt-8 divide-y divide-[#D8CEBD]">
+        {/* Industry Cards Grid */}
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {industries.map((ind, idx) => {
-            const isHovered = hoveredIdx === idx;
+            const isSelected = selectedIndustryId === ind.id;
+
             return (
               <div
-                key={ind.number}
-                onMouseEnter={() => setHoveredIdx(idx)}
-                onMouseLeave={() => setHoveredIdx(null)}
-                className={`group relative overflow-hidden transition-all duration-500 py-10 lg:py-12 px-6 -mx-6 ${
-                  isHovered ? "bg-[#FAF7F2] shadow-xl" : "bg-transparent"
+                key={ind.id}
+                onClick={() => setSelectedIndustryId(isSelected ? null : ind.id)}
+                className={`group flex flex-col justify-between overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer ${
+                  isSelected
+                    ? "border-[#161210] bg-[#FAF7F2] shadow-2xl ring-2 ring-[#C5A059]"
+                    : "border-[#D8CEBD] bg-[#FAF7F2] hover:border-[#C5A059] hover:shadow-xl"
                 }`}
               >
-                <div className="grid gap-8 lg:grid-cols-[100px_1.2fr_1fr_auto] lg:items-center relative z-10">
-                  {/* Number */}
-                  <span
-                    className={`font-mono text-3xl sm:text-4xl font-bold transition-colors duration-300 ${
-                      isHovered ? "text-[#9E4E39]" : "text-[#D8CEBD]"
-                    }`}
-                  >
-                    {ind.number}
-                  </span>
+                {/* Industry Hero Image */}
+                <div className="relative h-48 sm:h-52 overflow-hidden bg-[#161210]">
+                  <img
+                    src={ind.image}
+                    alt={ind.name}
+                    className="size-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-85"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#161210]/90 via-transparent to-transparent" />
 
-                  {/* Title & Tagline */}
-                  <div>
-                    <h3
-                      className={`font-serif text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all duration-300 ${
-                        isHovered ? "text-[#161210] translate-x-2" : "text-[#161210]/90"
-                      }`}
-                    >
+                  <div className="absolute top-3 left-3">
+                    <span className="rounded-lg bg-[#161210]/85 backdrop-blur-md px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-[#DFBA6F] border border-[#C5A059]/30">
+                      SECTOR 0{idx + 1}
+                    </span>
+                  </div>
+
+                  <div className="absolute bottom-3 left-3 right-3">
+                    <h3 className="font-serif text-lg font-bold text-[#FAF7F2] leading-tight group-hover:text-[#DFBA6F] transition-colors">
                       {ind.name}
                     </h3>
-                    <span className="mt-2 block font-mono text-xs text-[#9E4E39]">
-                      {ind.tagline}
-                    </span>
-                    <p className="mt-2 text-xs md:text-sm text-[#6B625B] leading-relaxed max-w-xl">
-                      {ind.desc}
-                    </p>
-                  </div>
-
-                  {/* Hover Image Preview */}
-                  <div className="hidden lg:block overflow-hidden h-32 border border-[#D8CEBD] bg-[#161210]">
-                    <img
-                      src={ind.image}
-                      alt={ind.name}
-                      className={`size-full object-cover transition-transform duration-700 ${
-                        isHovered ? "scale-110 opacity-100" : "scale-100 opacity-60"
-                      }`}
-                    />
-                  </div>
-
-                  {/* Action Button */}
-                  <div className="flex items-center justify-end">
-                    <Link
-                      to="/request-quote"
-                      className={`flex size-14 items-center justify-center border transition-all duration-300 ${
-                        isHovered
-                          ? "border-[#161210] bg-[#161210] text-[#FAF7F2]"
-                          : "border-[#D8CEBD] text-[#6B625B] group-hover:border-[#C5A059]"
-                      }`}
-                    >
-                      <ArrowRight
-                        size={20}
-                        className="transition-transform group-hover:translate-x-1"
-                      />
-                    </Link>
                   </div>
                 </div>
 
-                {/* Expanded Compliance Pill Tags */}
-                {isHovered && (
-                  <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-[#D8CEBD] animate-in fade-in duration-300 relative z-10">
-                    {ind.compliance.map((comp) => (
-                      <span
-                        key={comp}
-                        className="border border-[#D8CEBD] bg-[#F4EFE6] px-3 py-1 font-mono text-[11px] text-[#161210]"
-                      >
-                        ✓ {comp}
-                      </span>
-                    ))}
+                {/* Industry Card Body */}
+                <div className="flex flex-1 flex-col justify-between p-5 space-y-4">
+                  <div className="space-y-2">
+                    <p className="font-mono text-[11px] text-[#9E4E39] font-bold">
+                      {ind.tagline}
+                    </p>
+                    <p className="text-xs text-[#6B625B] leading-relaxed line-clamp-3">
+                      {ind.description}
+                    </p>
                   </div>
-                )}
+
+                  {/* Suitable Machinery Snippet */}
+                  <div className="space-y-2 border-t border-[#D8CEBD] pt-3">
+                    <span className="font-mono text-[10px] font-bold uppercase text-[#161210] block">
+                      SUITABLE MACHINERY:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(ind.suitableMachinery || []).map((sm, i) => (
+                        <span
+                          key={i}
+                          className="rounded-md bg-[#F4EFE6] border border-[#D8CEBD] px-2 py-0.5 font-mono text-[10px] text-[#161210]"
+                        >
+                          {sm}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Key Indian Clusters */}
+                  <div className="border-t border-[#D8CEBD] pt-3 flex items-center justify-between font-mono text-[10px]">
+                    <span className="text-[#6B625B] uppercase flex items-center gap-1">
+                      <MapPin size={11} className="text-[#C5A059]" />
+                      <span>CLUSTERS:</span>
+                    </span>
+                    <span className="font-bold text-[#161210] truncate max-w-[150px]">
+                      {(ind.clusters || []).slice(0, 2).join(", ")}
+                    </span>
+                  </div>
+
+                  {/* Card Toggle Button */}
+                  <button
+                    type="button"
+                    className={`w-full rounded-xl py-2 font-mono text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${
+                      isSelected
+                        ? "bg-[#161210] text-[#FAF7F2]"
+                        : "bg-[#F4EFE6] text-[#161210] hover:bg-[#C5A059] hover:text-[#161210]"
+                    }`}
+                  >
+                    <span>{isSelected ? "HIDE MATCHING MACHINES" : "VIEW MATCHING MACHINES"}</span>
+                    <ArrowRight size={12} className={isSelected ? "rotate-90" : ""} />
+                  </button>
+                </div>
               </div>
             );
           })}
         </div>
-      </section>
 
-      {/* Industry Trade Consultation */}
-      <section className="border-t border-[#D8CEBD] bg-[#161210] py-20 px-6 lg:px-12 text-[#FAF7F2] text-center">
-        <div className="mx-auto max-w-3xl space-y-5">
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#C5A059] block">
-            [ TAILORED SECTOR CONSULTATION ]
-          </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold">
-            Discuss Your Specific Commodity or Industrial Supply Need
-          </h2>
-          <p className="text-sm text-[#FAF7F2]/70 max-w-xl mx-auto leading-relaxed">
-            Our trade officers analyze chemical specifications, phytosanitary requirements, and
-            ocean stowage restrictions to structure a compliant delivery path.
-          </p>
-          <div className="pt-6">
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-3 border border-[#C5A059] bg-[#C5A059] px-8 py-4 font-mono text-xs font-bold tracking-[0.2em] uppercase text-[#161210] hover:bg-[#FAF7F2] transition-colors"
-            >
-              <span>CONNECT WITH INDUSTRY DESK</span>
-              <ArrowRight size={14} />
-            </Link>
+        {/* Selected Industry Detail & Matching Machines Modal / Drawer */}
+        {activeIndustry && (
+          <div className="mt-12 rounded-2xl border-2 border-[#C5A059] bg-[#FAF7F2] p-6 sm:p-10 shadow-2xl space-y-8 animate-in fade-in duration-300">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between border-b border-[#D8CEBD] pb-6 gap-4">
+              <div>
+                <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9E4E39]">
+                  [ ACTIVE INDUSTRY FOCUS ]
+                </span>
+                <h3 className="font-serif text-3xl sm:text-4xl font-bold text-[#161210] mt-1">
+                  {activeIndustry.name}
+                </h3>
+                <p className="text-sm text-[#6B625B] mt-1 font-mono">
+                  Major Indian Manufacturing Hubs: <strong>{(activeIndustry.clusters || []).join(" · ")}</strong>
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                <Link
+                  to="/contact"
+                  className="rounded-xl bg-[#161210] px-4 sm:px-6 py-2.5 sm:py-3 font-mono text-xs font-bold uppercase text-[#FAF7F2] hover:bg-[#C5A059] hover:text-[#161210] transition shadow-md w-auto"
+                >
+                  Inquire for Sector
+                </Link>
+                <button
+                  onClick={() => setSelectedIndustryId(null)}
+                  className="rounded-xl border border-[#D8CEBD] px-3.5 sm:px-4 py-2.5 sm:py-3 font-mono text-xs font-bold uppercase text-[#6B625B] hover:text-[#161210] cursor-pointer w-auto"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            {/* Compliance & Regulatory Standards */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {(activeIndustry.compliance || []).map((c, i) => (
+                <div key={i} className="rounded-xl bg-[#F4EFE6] border border-[#D8CEBD] p-4 flex items-center gap-3">
+                  <ShieldCheck size={20} className="text-[#C5A059] shrink-0" />
+                  <span className="font-mono text-xs font-bold text-[#161210]">{c}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Matching Machinery Sourced from China */}
+            <div className="space-y-4">
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#9E4E39] block">
+                [ RECOMMENDED CHINESE MACHINERY FOR THIS SECTOR ]
+              </span>
+
+              {matchingMachines.length === 0 ? (
+                <div className="rounded-xl bg-[#F4EFE6] p-8 text-center border border-[#D8CEBD]">
+                  <p className="text-sm text-[#6B625B]">
+                    Our engineers source custom turnkey plant lines for {activeIndustry.name}.
+                  </p>
+                  <Link
+                    to="/contact"
+                    className="mt-3 inline-flex items-center gap-2 font-mono text-xs font-bold text-[#161210] hover:text-[#9E4E39] uppercase underline"
+                  >
+                    <span>Request custom plant configuration</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {matchingMachines.map((m) => (
+                    <Link
+                      key={m.id}
+                      to="/products/$slug"
+                      params={{ slug: m.slug }}
+                      className="group rounded-xl border border-[#D8CEBD] bg-[#FAF7F2] p-4 hover:border-[#C5A059] hover:shadow-md transition-all flex items-center gap-4"
+                    >
+                      <div className="size-20 rounded-lg overflow-hidden shrink-0 bg-[#161210]">
+                        <img src={m.image} alt={m.name} className="size-full object-cover group-hover:scale-105 transition-transform" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <span className="font-mono text-[9px] font-bold uppercase text-[#9E4E39] block">
+                          🇨🇳 {m.manufacturer}
+                        </span>
+                        <h4 className="font-serif text-sm font-bold text-[#161210] truncate group-hover:text-[#9E4E39] transition-colors">
+                          {m.name}
+                        </h4>
+                        <span className="font-mono text-[11px] text-[#6B625B] block mt-1">
+                          Speed: {m.specs?.speed || m.specifications?.productionSpeed || "850 – 1,100 RPM"}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </section>
     </div>
   );

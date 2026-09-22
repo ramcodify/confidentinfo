@@ -4,11 +4,83 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* =====================================================
+   PRELOADER ANIMATIONS (2 SECONDS + DISSOLVE)
+   ===================================================== */
+@keyframes preloaderFadeOut {
+  0%   { opacity: 1; visibility: visible; }
+  85%  { opacity: 1; visibility: visible; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+@keyframes preloaderSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes preloaderPulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.97); }
+  50%       { opacity: 1;    transform: scale(1.03); }
+}
+
+#site-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  background: #161210;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: preloaderFadeOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) 2.0s forwards;
+}
+#site-preloader.loaded {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* =====================================================
+   SMOOTH ROUTE TRANSITIONS BETWEEN PAGES
+   ===================================================== */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-fade {
+  animation: pageFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+.preloader-ring {
+  width: 44px;
+  height: 44px;
+  border: 2px solid rgba(197,160,89,0.2);
+  border-top-color: #C5A059;
+  border-radius: 50%;
+  animation: preloaderSpin 0.8s linear infinite;
+}
+.preloader-wordmark {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(197,160,89,0.7);
+  animation: preloaderPulse 1.6s ease-in-out infinite;
+}
+
+
 @theme inline {
   --font-sans:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
-  --font-display: "Plus Jakarta Sans", "Playfair Display", Georgia, serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-display: "Plus Jakarta Sans", Georgia, serif;
   --font-mono: "JetBrains Mono", "Courier New", monospace;
 
   --color-background: var(--background);
@@ -76,9 +148,42 @@
     border-color: var(--color-border);
   }
   html {
-    scroll-behavior: smooth;
     background-color: #f8fafc;
+    font-size: 15px; /* Compact & clean base on small mobile */
   }
+
+  /* Responsive base font sizing for tablets, desktops, and ultra-wide screens */
+  @media (min-width: 640px) {
+    html {
+      font-size: 16px; /* Standard base */
+    }
+  }
+  @media (min-width: 1440px) {
+    html {
+      font-size: 17px; /* Enhanced legibility on wide screens */
+    }
+  }
+  @media (min-width: 1680px) {
+    html {
+      font-size: 18px; /* Bigger text on large desktop displays */
+    }
+  }
+  @media (min-width: 1920px) {
+    html {
+      font-size: 19.5px; /* Full HD 1080p & 24"+ monitors */
+    }
+  }
+  @media (min-width: 2560px) {
+    html {
+      font-size: 22px; /* 2K / QHD & Ultrawide monitors */
+    }
+  }
+  @media (min-width: 3840px) {
+    html {
+      font-size: 26px; /* 4K UHD displays */
+    }
+  }
+
   body {
     margin: 0;
     background-color: #f8fafc;
@@ -87,14 +192,19 @@
     letter-spacing: -0.011em;
     overflow-x: hidden;
     position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   h1,
   h2,
-  h3,
-  .font-serif {
-    font-family: var(--font-sans);
+  h3 {
     font-weight: 700;
     letter-spacing: -0.025em;
+  }
+  .font-serif {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    letter-spacing: -0.015em;
   }
   .font-display {
     font-family: var(--font-display);
@@ -107,6 +217,12 @@
   select,
   textarea {
     font: inherit;
+  }
+  /* Prevent iOS zoom on input focus */
+  @media screen and (max-width: 767px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
   }
   ::selection {
     background: #2563eb;
@@ -126,19 +242,38 @@
   display: none;
 }
 
-/* Modern Glass Card */
+/* Warm Luxury Glass Card */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: rgba(250, 247, 242, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(216, 206, 189, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(22, 18, 16, 0.05);
 }
 
 .glass-panel-dark {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(22, 18, 16, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(197, 160, 89, 0.22);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Floating Glass Island & Pills */
+.glass-island {
+  background: rgba(22, 18, 16, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(197, 160, 89, 0.08);
+}
+
+.glass-pill {
+  background: rgba(30, 25, 22, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 /* Trade Marquee Ticker */
@@ -155,6 +290,8 @@
   display: flex;
   width: max-content;
   animation: ticker 35s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 .animate-ticker:hover {
   animation-play-state: paused;
@@ -215,20 +352,53 @@
   border-color: rgba(217, 119, 6, 0.15);
 }
 
-/* Modern Sleek Scrollbar */
+/* Modal & Dialog Smooth Entrance */
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-enter {
+  animation: modalEnter 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* High-Performance Transitions - Avoid filter/backdrop-filter/box-shadow transitions */
+a,
+button {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 150ms;
+}
+
+input,
+select,
+textarea {
+  transition-property: color, background-color, border-color, box-shadow;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 150ms;
+}
+
+/* Warm Luxury Scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #161210;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgba(197, 160, 89, 0.35);
   border-radius: 9999px;
+  border: 1px solid rgba(197, 160, 89, 0.15);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(197, 160, 89, 0.65);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -3,13 +3,13 @@ import { ImportPage } from "../components/trade-pages";
 export const Route = createFileRoute("/import")({
   head: () => ({
     meta: [
-      { title: "Import Solutions | Meridian Trade Co." },
+      { title: "Import Solutions | Confident Textiles Machinery" },
       {
         name: "description",
         content:
           "Supplier sourcing, verification, inspection, documentation, customs coordination, and delivery.",
       },
-      { property: "og:title", content: "Import Solutions | Meridian" },
+      { property: "og:title", content: "Import Solutions | Confident Machinery" },
       { property: "og:description", content: "Bringing global quality to local markets." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
