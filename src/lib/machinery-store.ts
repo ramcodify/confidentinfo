@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { sanitizeInput } from "./security";
 
 export type MachineSpecs = {
   speed: string;
@@ -1033,8 +1034,17 @@ export function useMachineryStore() {
   // Customer Enquiry Operations
   const submitEnquiry = (enquiry: Omit<CustomerEnquiry, "id" | "createdAt" | "status">) => {
     const newEnq: CustomerEnquiry = {
-      ...enquiry,
       id: `enq-${Date.now()}`,
+      name: sanitizeInput(enquiry.name),
+      company: sanitizeInput(enquiry.company),
+      email: sanitizeInput(enquiry.email),
+      phone: sanitizeInput(enquiry.phone),
+      machineId: enquiry.machineId ? sanitizeInput(enquiry.machineId) : undefined,
+      machineName: enquiry.machineName ? sanitizeInput(enquiry.machineName) : undefined,
+      industry: enquiry.industry ? sanitizeInput(enquiry.industry) : undefined,
+      quantity: enquiry.quantity ? sanitizeInput(enquiry.quantity) : undefined,
+      location: enquiry.location ? sanitizeInput(enquiry.location) : undefined,
+      requirement: sanitizeInput(enquiry.requirement),
       status: "New",
       createdAt: new Date().toISOString(),
     };
