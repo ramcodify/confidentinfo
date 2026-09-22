@@ -26,6 +26,7 @@ bunfig.toml
 # Editor directories and files
 .workspace/
 .vscode/*
+!.vscode/settings.json
 !.vscode/extensions.json
 .idea
 .DS_Store
