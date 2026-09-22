@@ -1,5 +1,5 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useRef } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -32,6 +32,8 @@ function ProductDetailPage() {
 
   const product = products.find((p) => p.slug === slug);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const renderTimeRef = useRef(Date.now());
   const [formData, setFormData] = useState({
     name: "",
     company: "",
@@ -40,6 +42,7 @@ function ProductDetailPage() {
     location: "",
     quantity: "1 Unit",
     message: "",
+    _trap: "",
   });
 
   if (!product) {
@@ -69,16 +72,31 @@ function ProductDetailPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    submitEnquiry({
-      name: formData.name,
-      company: formData.company,
-      email: formData.email,
-      phone: formData.phone,
-      machineId: product.id,
-      machineName: product.name,
-      requirement: `[Inquiry for ${product.name} - Qty: ${formData.quantity}, Location: ${formData.location}] ${formData.message}`,
-    });
-    setFormSubmitted(true);
+    if (isSubmitting) return;
+    if (formData._trap) return; // bot trapped
+
+    // Bot detection: automated script filling faster than a human (under 1.5 seconds)
+    const elapsed = Date.now() - renderTimeRef.current;
+    if (elapsed < 1500) {
+      console.warn("Automated submission blocked by timing analysis");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      submitEnquiry({
+        name: formData.name,
+        company: formData.company,
+        email: formData.email,
+        phone: formData.phone,
+        machineId: product.id,
+        machineName: product.name,
+        requirement: `[Inquiry for ${product.name} - Qty: ${formData.quantity}, Location: ${formData.location}] ${formData.message}`,
+      });
+      setFormSubmitted(true);
+    } finally {
+      setTimeout(() => setIsSubmitting(false), 2000);
+    }
   };
 
   return (
@@ -390,12 +408,27 @@ function ProductDetailPage() {
                     />
                   </div>
 
+                  {/* Honeypot field — hidden from users, traps bots */}
+                  <div aria-hidden="true" tabIndex={-1} style={{ position: "absolute", left: "-9999px", opacity: 0, pointerEvents: "none" }}>
+                    <label htmlFor="_prod_trap">Leave this field empty</label>
+                    <input
+                      id="_prod_trap"
+                      type="text"
+                      name="_prod_trap"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={formData._trap}
+                      onChange={(e) => setFormData({ ...formData, _trap: e.target.value })}
+                    />
+                  </div>
+
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#161210] py-2.5 sm:py-3.5 px-5 sm:px-8 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#FAF7F2] transition-all duration-200 hover:bg-[#C5A059] hover:text-[#161210] hover:shadow-md cursor-pointer font-mono w-auto"
+                      disabled={isSubmitting}
+                      className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#161210] py-2.5 sm:py-3.5 px-5 sm:px-8 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#FAF7F2] transition-all duration-200 hover:bg-[#C5A059] hover:text-[#161210] hover:shadow-md cursor-pointer font-mono w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <span>Send Inquiry</span>
+                      <span>{isSubmitting ? "Sending..." : "Send Inquiry"}</span>
                       <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
                     </button>
                   </div>

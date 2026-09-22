@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { PageHero, SectionLabel, MarqueeTicker } from "../components/site";
 import { useMachineryStore } from "../lib/machinery-store";
+import { sanitizeInput } from "../lib/security";
 import warehouseOperations from "../assets/warehouse-operations.jpg";
 
 export const Route = createFileRoute("/contact")({
@@ -43,6 +44,9 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const { companyInfo, products, submitEnquiry } = useMachineryStore();
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const renderTimeRef = useRef(Date.now());
+
   const [formData, setFormData] = useState({
     name: "",
     company: "",
@@ -59,17 +63,35 @@ function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     // Honeypot check — if trap field is filled, silently reject (bot submission)
     if (formData._trap) return;
-    submitEnquiry({
-      name: formData.name,
-      company: formData.company,
-      email: formData.email,
-      phone: formData.phone,
-      machineName: formData.specificMachine || `${formData.machineCategory} Machinery`,
-      requirement: `[Mill Location: ${formData.location}, Qty: ${formData.quantity}, Category: ${formData.machineCategory}] ${formData.message}`,
-    });
-    setFormSubmitted(true);
+
+    // Bot detection: automated script filling faster than a human (under 1.5 seconds)
+    const elapsed = Date.now() - renderTimeRef.current;
+    if (elapsed < 1500) {
+      console.warn("Automated submission blocked by timing analysis");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      submitEnquiry({
+        name: sanitizeInput(formData.name),
+        company: sanitizeInput(formData.company),
+        email: sanitizeInput(formData.email),
+        phone: sanitizeInput(formData.phone),
+        machineName: sanitizeInput(formData.specificMachine || `${formData.machineCategory} Machinery`),
+        requirement: sanitizeInput(
+          `[Mill Location: ${formData.location}, Qty: ${formData.quantity}, Category: ${formData.machineCategory}] ${formData.message}`
+        ),
+      });
+      setFormSubmitted(true);
+    } finally {
+      setTimeout(() => setIsSubmitting(false), 2000);
+    }
   };
 
   const contactChannels = [
@@ -432,9 +454,10 @@ function ContactPage() {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#161210] py-2.5 sm:py-3.5 px-5 sm:px-8 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#FAF7F2] transition-all duration-200 hover:bg-[#9E4E39] hover:shadow-md cursor-pointer font-mono w-auto"
+                    disabled={isSubmitting}
+                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#161210] py-2.5 sm:py-3.5 px-5 sm:px-8 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#FAF7F2] transition-all duration-200 hover:bg-[#9E4E39] hover:shadow-md cursor-pointer font-mono w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span>Submit Requirement</span>
+                    <span>{isSubmitting ? "Transmitting..." : "Submit Requirement"}</span>
                     <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
                   </button>
                 </div>

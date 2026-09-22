@@ -21,6 +21,7 @@ import {
 import { useEffect, useState, type ReactNode } from "react";
 import {
   isAdminAuthenticated,
+  isLoginLockedOut,
   loginAdmin,
   logoutAdmin,
   subscribeToAuth,
@@ -114,6 +115,13 @@ export function AdminAuthModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    const lockout = isLoginLockedOut();
+    if (lockout.locked) {
+      setError(`Security Lockout: Retry in ${lockout.remainingSeconds}s.`);
+      return;
+    }
+
     const success = loginAdmin(adminId, password);
     if (success) {
       setError("");
@@ -121,7 +129,12 @@ export function AdminAuthModal({
       setPassword("");
       onClose();
     } else {
-      setError("Invalid Admin ID or Password. Access restricted.");
+      const updatedLockout = isLoginLockedOut();
+      if (updatedLockout.locked) {
+        setError("Security Lockout: Too many failed attempts. Locked for 5 minutes.");
+      } else {
+        setError("Invalid Admin ID or Password. Access restricted.");
+      }
     }
   };
 

@@ -46,6 +46,7 @@ import {
 } from "lucide-react";
 import {
   isAdminAuthenticated,
+  isLoginLockedOut,
   loginAdmin,
   logoutAdmin,
   subscribeToAuth,
@@ -95,9 +96,21 @@ function AdminPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
+
+    const lockout = isLoginLockedOut();
+    if (lockout.locked) {
+      setLoginError(`Security Lockout: Too many failed attempts. Please retry in ${lockout.remainingSeconds} seconds.`);
+      return;
+    }
+
     const success = loginAdmin(adminId, password);
     if (!success) {
-      setLoginError("Invalid credentials. Please verify your Admin ID and Password.");
+      const updatedLockout = isLoginLockedOut();
+      if (updatedLockout.locked) {
+        setLoginError(`Security Lockout Activated: 5 consecutive failed attempts. Access locked for 5 minutes.`);
+      } else {
+        setLoginError("Invalid credentials. Please verify your Admin ID and Password.");
+      }
     }
   };
 
